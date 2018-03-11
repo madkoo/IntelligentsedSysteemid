@@ -31,7 +31,7 @@
   (declare (salience 10000))
   =>
   (set-fact-duplication TRUE)
-  (focus QUESTIONS PRINT-RESULTS))
+  (focus QUESTIONS CHOOSE-SHOP OPTIONS PRINT-RESULTS))
 
 (defrule MAIN::combine-certainties ""
   (declare (salience 100)
@@ -49,7 +49,7 @@
 
 (defmodule QUESTIONS (import MAIN ?ALL) (export ?ALL))
 
-(deftemplate QUESTION::range-question
+(deftemplate QUESTIONS::range-question
   (slot attribute (default ?NONE))
   (slot the-question (default ?NONE))
   (multislot valid-answers (type NUMBER) (default ?NONE))
@@ -93,35 +93,6 @@
     then (modify ?f (precursors (rest$ ?rest)))
     else (modify ?f (precursors ?rest))))
 
-(defrule QUESTIONS::ask-a-question
-   ?f <- (question (already-asked FALSE)
-                   (precursors)
-                   (the-question ?the-question)
-                   (attribute ?the-attribute)
-                   (valid-answers $?valid-answers))
-   =>
-   (modify ?f (already-asked TRUE))
-   (assert (attribute (name ?the-attribute)
-                      (value (ask-question ?the-question ?valid-answers)))))
-
-(defrule QUESTIONS::precursor-is-satisfied
-   ?f <- (question (already-asked FALSE)
-                   (precursors ?name is ?value $?rest))
-         (attribute (name ?name) (value ?value))
-   =>
-   (if (eq (nth 1 ?rest) and) 
-    then (modify ?f (precursors (rest$ ?rest)))
-    else (modify ?f (precursors ?rest))))
-
-(defrule QUESTIONS::precursor-is-not-satisfied
-   ?f <- (question (already-asked FALSE)
-                   (precursors ?name is-not ?value $?rest))
-         (attribute (name ?name) (value ~?value))
-   =>
-   (if (eq (nth 1 ?rest) and) 
-    then (modify ?f (precursors (rest$ ?rest)))
-    else (modify ?f (precursors ?rest))))
-
 ;;*******************
 ;;* Defineerime küsimusedS *
 ;;*******************
@@ -131,18 +102,18 @@
 
 (deffacts TEST-QUESTIONS::question-attributes   
 
-(question (attribute expected-arrival)
+  (question (attribute preferred-selection-size)
             (the-question "Kui suur valik on poes sinu kaup, kas kauplus, supermarket, hypermarket?")
-            (valid-answers kauplus supermarket hypermarket)))
+            (valid-answers kauplus supermarket hypermarket))
   (question (attribute expected-arrival)
             (the-question "Kui kiiresti soovid poodi jõuda, 5min, 30min, 1h, 2h ")
-            (valid-answers 5min 30min 1h 2h))) 
+            (valid-answers 5min 30min 1h 2h))
   (question (attribute preferred-transport)
             (the-question "Millist transporti soovid kasutada kaubale järgi minemiseks, kas jalgsimatk, yhistransport, eratransport voi auto?")
-            (valid-answers jalgsimatk yhistransport eratransport auto))) 
+            (valid-answers jalgsimatk yhistransport eratransport auto))
   (range-question (attribute maximum-budget)
             (the-question "Kui suure summa oled valmis kulutada kaubale ja transpordile poodi? 5, 10, 25 ,50 ,100")
-            (valid-answers 5 10 25 50 100))) 
+            (valid-answers 5 10 25 50 100)))
 
  
 ;;******************
@@ -217,8 +188,8 @@
 
   ; Rules for picking the best shop
 
-  (rule (if maximum-budget >= 0 and maximum-budget <=10)
-        (then transport is on Foot))
+  (rule (if maximum-budget is 5)
+        (then best-transport is on-foot))
 
   
 )
@@ -230,22 +201,21 @@
 (defmodule OPTIONS (import MAIN ?ALL))
 
 (deffacts any-attributes
-  (attribute (name transport) (value any))
+  (attribute (name best-transport) (value any)))
 
-(deftemplate OPTIONS::option
+(deftemplate OPTIONS::result
   (slot name (default ?NONE))
   (multislot transport(default any)))
 
-(deffacts OPTIONS::the-wine-list 
-  (result (name Tulemus) (transport Jalgsi)))
+(deffacts OPTIONS::the-wine-list
+  (result (name Tulemus) (transport on-foot)))
   
 (defrule OPTIONS::generate-wines
   (result (name ?name)
         (transport $? ?c $?))
-  (attribute (name best-color) (value ?c) (certainty ?certainty-1))
+  (attribute (name best-transport) (value ?c) (certainty ?certainty-1))
   =>
-  (assert (attribute (name result) (value ?name)
-                     (certainty (min ?certainty-1 ?certainty-2 ?certainty-3)))))
+  (assert (attribute (name result) (value ?name))))
 
 ;;*****************************
 ;;* PRINT SELECTED WINE RULES  prindime tulemused  peab muutma *
