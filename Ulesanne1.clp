@@ -102,15 +102,15 @@
 
 (deffacts TEST-QUESTIONS::question-attributes   
 
- (question (attribute popularity)
+(question (attribute popularity)
             (the-question "Kas eelistad, et poes oleks vÃµimalikult vÃ¤he rahvast, jah vÃµi ei")
-            (valid-answers jah ei))
+            (valid-answers jah ei)))
 (question (attribute handicaped)
             (the-question "Kas lähed ratastooli, vankri, mÃµlemaga vÃµi ilma?(vanker, ratastool, molemad, ei)")
-            (valid-answers ratastool vanker molemad ei ))
+            (valid-answers ratastool vanker molemad ei )))
 (question (attribute maximum-people)
             (the-question "Kui palju inimesi poodi tootele järgi läheb?(nt 1,2,3,4,5)")
-            (valid-answers 1 2 3 4 5))
+            (valid-answers 1 2 3 4 5)))
 (question (attribute language)
             (the-question "Mis keelt sa räägid? (inglise, vene, eesti, prantsuse, itaalia, hispaania)")
             (valid-answers inglise, vene, eesti, prantsuse, itaalia, hispaania)))
@@ -205,15 +205,22 @@
 
 (deffacts the-shop-rules
 
-  ; Rules for picking the best shop
+  ; Rules for picking the best transport
 
   (rule (if maximum-budget is 5)
         (then best-transport is on-foot))
 		
   (rule (if maximum-budget >= 0 and maximum-budget <=10)
-        (then transport is on jalgsi))
+        (then best-transport is on-foot))
   (rule (if maximum-budget >= 10 and maximum-budget <=20)
-        (then transport is on yhistransport))
+        (then best-transport is on yhistransport))
+
+  ; Rules product best product price
+
+  ; Rules product best shop location and name
+
+  ; Rules product best transport
+
 
   
 )
@@ -225,7 +232,8 @@
 (defmodule TRANSPORTS (import MAIN ?ALL))
 
 (deffacts any-attributes
-  (attribute (name best-transport) (value any))
+  (attribute (name best-transport) (value any)))
+  ;(attribute (name best-transport) (value any))
 
 (deftemplate TRANSPORTS::transport
   (slot name (default ?NONE))
@@ -252,23 +260,23 @@
    =>
    (printout t t)
    (printout t " -------------------------------" t)
-   (assert (phase print-shops)))
+   (assert (phase print-wines)))
 
-(defrule PRINT-RESULTS::print-shops ""
-  ?rem <- (attribute (name result) (value ?name) (certainty ?per))		  
-  (not (attribute (name result) (certainty ?per1&:(> ?per1 ?per))))
+(defrule PRINT-RESULTS::print-wine ""
+  ?rem <- (attribute (name wine) (value ?name) (certainty ?per))		  
+  (not (attribute (name wine) (certainty ?per1&:(> ?per1 ?per))))
   =>
   (retract ?rem)
   (format t " %-24s %2d%%%n" ?name ?per))
 
-(defrule PRINT-RESULTS::remove-poor-transport-choices ""
-  ?rem <- (attribute (name transport) (certainty ?per&:(< ?per 20)))
+(defrule PRINT-RESULTS::remove-poor-wine-choices ""
+  ?rem <- (attribute (name wine) (certainty ?per&:(< ?per 20)))
   =>
   (retract ?rem))
 
 (defrule PRINT-RESULTS::end-spaces ""
-   (not (attribute (name transport)))
+   (not (attribute (name wine)))
    =>
-
+   (printout t t))
 
 
