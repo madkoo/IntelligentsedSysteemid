@@ -31,7 +31,7 @@
   (declare (salience 10000))
   =>
   (set-fact-duplication TRUE)
-  (focus QUESTIONS CHOOSE-SHOP OPTIONS PRINT-RESULTS))
+  (focus QUESTIONS CHOOSE-SHOP TRANSPORTS PRINT-RESULTS))
 
 (defrule MAIN::combine-certainties ""
   (declare (salience 100)
@@ -102,18 +102,37 @@
 
 (deffacts TEST-QUESTIONS::question-attributes   
 
+ (question (attribute popularity)
+            (the-question "Kas eelistad, et poes oleks vÃµimalikult vÃ¤he rahvast, jah vÃµi ei")
+            (valid-answers jah ei))
+(question (attribute handicaped)
+            (the-question "Kas lähed ratastooli, vankri, mÃµlemaga vÃµi ilma?(vanker, ratastool, molemad, ei)")
+            (valid-answers ratastool vanker molemad ei ))
+(question (attribute maximum-people)
+            (the-question "Kui palju inimesi poodi tootele järgi läheb?(nt 1,2,3,4,5)")
+            (valid-answers 1 2 3 4 5))
+(question (attribute language)
+            (the-question "Mis keelt sa räägid? (inglise, vene, eesti, prantsuse, itaalia, hispaania)")
+            (valid-answers inglise, vene, eesti, prantsuse, itaalia, hispaania)))
+(question (attribute area)
+            (the-question "Kas on oluline, et piirkond oleks turvaline, jah või ei ")
+            (valid-answers jah ei)))
+  (question (attribute product)
+            (the-question "Mida soovid osta, kas piim, leib, sai, viin")
+            (valid-answers piim leib sai viin)))
   (question (attribute preferred-selection-size)
             (the-question "Kui suur valik on poes sinu kaup, kas kauplus, supermarket, hypermarket?")
-            (valid-answers kauplus supermarket hypermarket))
+            (valid-answers kauplus supermarket hypermarket)))
   (question (attribute expected-arrival)
-            (the-question "Kui kiiresti soovid poodi jõuda, 5min, 30min, 1h, 2h ")
-            (valid-answers 5min 30min 1h 2h))
+            (the-question "Kui kiiresti soovid poodi jõuda, 5min, 30min, 1h, 2h?")
+            (valid-answers 5min 30min 1h 2h))) 
   (question (attribute preferred-transport)
             (the-question "Millist transporti soovid kasutada kaubale järgi minemiseks, kas jalgsimatk, yhistransport, eratransport voi auto?")
-            (valid-answers jalgsimatk yhistransport eratransport auto))
+            (valid-answers jalgsimatk yhistransport eratransport auto))) 
   (range-question (attribute maximum-budget)
             (the-question "Kui suure summa oled valmis kulutada kaubale ja transpordile poodi? 5, 10, 25 ,50 ,100")
-            (valid-answers 5 10 25 50 100)))
+            (valid-answers 5 10 25 50 100))) 
+
 
  
 ;;******************
@@ -190,35 +209,40 @@
 
   (rule (if maximum-budget is 5)
         (then best-transport is on-foot))
+		
+  (rule (if maximum-budget >= 0 and maximum-budget <=10)
+        (then transport is on jalgsi))
+  (rule (if maximum-budget >= 10 and maximum-budget <=20)
+        (then transport is on yhistransport))
 
   
 )
 
 ;;************************
-;;* OPTIONS SELECTION RULES  PEAME MUUTMA MINGIT MOODI*
+;;* TRANSPORTS SELECTION RULES  PEAME MUUTMA MINGIT MOODI*
 ;;************************
 
-(defmodule OPTIONS (import MAIN ?ALL))
+(defmodule TRANSPORTS (import MAIN ?ALL))
 
 (deffacts any-attributes
-  (attribute (name best-transport) (value any)))
+  (attribute (name best-transport) (value any))
 
-(deftemplate OPTIONS::result
+(deftemplate TRANSPORTS::transport
   (slot name (default ?NONE))
-  (multislot transport(default any)))
+  (multislot transporttype(default any)))
 
-(deffacts OPTIONS::the-wine-list
-  (result (name Tulemus) (transport on-foot)))
+(deffacts TRANSPORTS::the-transport-list 
+  (transport (name Jalgsimatk) (transporttype on-foot)))
   
-(defrule OPTIONS::generate-wines
-  (result (name ?name)
-        (transport $? ?c $?))
+(defrule TRANSPORTS::generate-transports
+  (transport (name ?name)
+        (transporttype $? ?c $?))
   (attribute (name best-transport) (value ?c) (certainty ?certainty-1))
   =>
-  (assert (attribute (name result) (value ?name))))
+  (assert (attribute (name transport) (value ?name))))
 
 ;;*****************************
-;;* PRINT SELECTED WINE RULES  prindime tulemused  peab muutma *
+;;* PRINT SELECTED  RULES  prindime tulemused  peab muutma *
 ;;*****************************
 
 (defmodule PRINT-RESULTS (import MAIN ?ALL))
@@ -228,25 +252,23 @@
    =>
    (printout t t)
    (printout t " -------------------------------" t)
-   (assert (phase print-wines)))
+   (assert (phase print-shops)))
 
-(defrule PRINT-RESULTS::print-wine ""
+(defrule PRINT-RESULTS::print-shops ""
   ?rem <- (attribute (name result) (value ?name) (certainty ?per))		  
   (not (attribute (name result) (certainty ?per1&:(> ?per1 ?per))))
   =>
   (retract ?rem)
   (format t " %-24s %2d%%%n" ?name ?per))
 
-(defrule PRINT-RESULTS::remove-poor-wine-choices ""
-  ?rem <- (attribute (name result) (certainty ?per&:(< ?per 20)))
+(defrule PRINT-RESULTS::remove-poor-transport-choices ""
+  ?rem <- (attribute (name transport) (certainty ?per&:(< ?per 20)))
   =>
   (retract ?rem))
 
 (defrule PRINT-RESULTS::end-spaces ""
-   (not (attribute (name result)))
+   (not (attribute (name transport)))
    =>
-   (printout t t))
-
 
 
 
