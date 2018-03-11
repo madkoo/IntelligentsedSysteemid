@@ -263,19 +263,19 @@
    (assert (phase print-wines)))
 
 (defrule PRINT-RESULTS::print-wine ""
-  ?rem <- (attribute (name wine) (value ?name) (certainty ?per))		  
-  (not (attribute (name wine) (certainty ?per1&:(> ?per1 ?per))))
+  ?rem <- (attribute (name transport) (value ?name) (certainty ?per))		  
+  (not (attribute (name transport) (certainty ?per1&:(> ?per1 ?per))))
   =>
   (retract ?rem)
   (format t " %-24s %2d%%%n" ?name ?per))
 
 (defrule PRINT-RESULTS::remove-poor-wine-choices ""
-  ?rem <- (attribute (name wine) (certainty ?per&:(< ?per 20)))
+  ?rem <- (attribute (name transport) (certainty ?per&:(< ?per 20)))
   =>
   (retract ?rem))
 
 (defrule PRINT-RESULTS::end-spaces ""
-   (not (attribute (name wine)))
+   (not (attribute (name transport)))
    =>
    (printout t t))
 
