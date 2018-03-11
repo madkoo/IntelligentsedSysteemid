@@ -8,12 +8,12 @@
 ;;* DEFFUNCTIONS *
 ;;****************
 
-(deffunction MAIN::ask-question (?question ?allowed-values)
-   (printout t ?question)
+(deffunction MAIN::ask-question (?question ?allowed-values ?number-question ?allowed-values)
+   (printout t ?question and ?number-question)
    (bind ?answer (read))
    (if (lexemep ?answer) then (bind ?answer (lowcase ?answer)))
    (while (not (member ?answer ?allowed-values)) do
-      (printout t ?question)
+     (printout t ?question and ?number-question)
       (bind ?answer (read))
       (if (lexemep ?answer) then (bind ?answer (lowcase ?answer))))
    ?answer)
@@ -49,12 +49,43 @@
 
 (defmodule QUESTIONS (import MAIN ?ALL) (export ?ALL))
 
-(deftemplate QUESTIONS::range-question
-  (slot attribute (default ?NONE))
-  (slot the-question (default ?NONE))
-  (multislot valid-answers (type NUMBER) (default ?NONE))
-  (slot already-asked (default FALSE))
-  (multislot precursors (default ?DERIVE)))
+
+(deftemplate QUESTIONS::number-question
+   (slot attribute (default ?NONE))
+   (slot the-question (default ?NONE))
+   (multislot valid-answers (type NUMBER) (default ?NONE))
+   (slot already-asked (default FALSE))
+   (multislot precursors (default ?DERIVE)))
+
+    (defrule QUESTIONS::ask-a-question2
+   ?f <- (number-question (already-asked FALSE)
+                   (precursors)
+                   (the-question ?the-question)
+                   (attribute ?the-attribute)
+                   (valid-answers $?valid-answers))
+   =>
+   (modify ?f (already-asked TRUE))
+   (assert (attribute (name ?the-attribute)
+                      (value (ask-question ?the-question ?valid-answers)))))
+
+(defrule QUESTIONS::precursor-is-satisfied2
+   ?f <- (number-question (already-asked FALSE)
+                   (precursors ?name is ?value $?rest))
+         (attribute (name ?name) (value ?value))
+   =>
+   (if (eq (nth 1 ?rest) and) 
+    then (modify ?f (precursors (rest$ ?rest)))
+    else (modify ?f (precursors ?rest))))
+
+(defrule QUESTIONS::precursor-is-not-satisfied2
+   ?f <- (number-question (already-asked FALSE)
+                   (precursors ?name is-not ?value $?rest))
+         (attribute (name ?name) (value ~?value))
+   =>
+   (if (eq (nth 1 ?rest) and) 
+    then (modify ?f (precursors (rest$ ?rest)))
+    else (modify ?f (precursors ?rest))))
+
 
 (deftemplate QUESTIONS::question
    (slot attribute (default ?NONE))
@@ -62,10 +93,9 @@
    (multislot valid-answers (default ?NONE))
    (slot already-asked (default FALSE))
    (multislot precursors (default ?DERIVE)))
-   
 
-(defrule QUESTIONS::ask-a-question
-   ?f <- (range-question (already-asked FALSE)
+    (defrule QUESTIONS::ask-a-question
+   ?f <- (question (already-asked FALSE)
                    (precursors)
                    (the-question ?the-question)
                    (attribute ?the-attribute)
@@ -76,7 +106,7 @@
                       (value (ask-question ?the-question ?valid-answers)))))
 
 (defrule QUESTIONS::precursor-is-satisfied
-   ?f <- (range-question (already-asked FALSE)
+   ?f <- (question (already-asked FALSE)
                    (precursors ?name is ?value $?rest))
          (attribute (name ?name) (value ?value))
    =>
@@ -85,7 +115,7 @@
     else (modify ?f (precursors ?rest))))
 
 (defrule QUESTIONS::precursor-is-not-satisfied
-   ?f <- (range-question (already-asked FALSE)
+   ?f <- (question (already-asked FALSE)
                    (precursors ?name is-not ?value $?rest))
          (attribute (name ?name) (value ~?value))
    =>
@@ -104,32 +134,32 @@
 
 (question (attribute popularity)
             (the-question "Kas eelistad, et poes oleks vÃµimalikult vÃ¤he rahvast, jah vÃµi ei")
-            (valid-answers jah ei)))
+            (valid-answers jah ei))
 (question (attribute handicaped)
             (the-question "Kas lähed ratastooli, vankri, mÃµlemaga vÃµi ilma?(vanker, ratastool, molemad, ei)")
-            (valid-answers ratastool vanker molemad ei )))
+            (valid-answers ratastool vanker molemad ei ))
 (question (attribute maximum-people)
             (the-question "Kui palju inimesi poodi tootele järgi läheb?(nt 1,2,3,4,5)")
-            (valid-answers 1 2 3 4 5)))
+            (valid-answers 1 2 3 4 5))
 (question (attribute language)
             (the-question "Mis keelt sa räägid? (inglise, vene, eesti, prantsuse, itaalia, hispaania)")
-            (valid-answers inglise, vene, eesti, prantsuse, itaalia, hispaania)))
+            (valid-answers inglise vene eesti prantsuse itaalia hispaania))
 (question (attribute area)
             (the-question "Kas on oluline, et piirkond oleks turvaline, jah või ei ")
-            (valid-answers jah ei)))
+            (valid-answers jah ei))
   (question (attribute product)
             (the-question "Mida soovid osta, kas piim, leib, sai, viin")
-            (valid-answers piim leib sai viin)))
+            (valid-answers piim leib sai viin))
   (question (attribute preferred-selection-size)
             (the-question "Kui suur valik on poes sinu kaup, kas kauplus, supermarket, hypermarket?")
-            (valid-answers kauplus supermarket hypermarket)))
+            (valid-answers kauplus supermarket hypermarket))
   (question (attribute expected-arrival)
             (the-question "Kui kiiresti soovid poodi jõuda, 5min, 30min, 1h, 2h?")
-            (valid-answers 5min 30min 1h 2h))) 
+            (valid-answers 5min 30min 1h 2h))
   (question (attribute preferred-transport)
             (the-question "Millist transporti soovid kasutada kaubale järgi minemiseks, kas jalgsimatk, yhistransport, eratransport voi auto?")
-            (valid-answers jalgsimatk yhistransport eratransport auto))) 
-  (range-question (attribute maximum-budget)
+            (valid-answers jalgsimatk yhistransport eratransport auto))
+  (number-question (attribute maximum-budget)
             (the-question "Kui suure summa oled valmis kulutada kaubale ja transpordile poodi? 5, 10, 25 ,50 ,100")
             (valid-answers 5 10 25 50 100))) 
 
@@ -215,6 +245,56 @@
   (rule (if maximum-budget >= 10 and maximum-budget <=20)
         (then best-transport is on yhistransport))
 
+     ;jalgi matka reeglid 
+  (rule (if maximum-budget >= 0 and maximum-budget <=10 and expected-arrival is 5min and handicaped is ei and maximum-people <= 2 and preferred-transport is jalgsimatk)
+        (then best-transport is on jalgsi))
+  
+  (rule (if maximum-budget >= 0 and maximum-budget <=5 and expected-arrival is 30min and handicaped is ei and maximum-people <= 5 and preferred-transport is jalgsimatk)
+        (then best-transport is on jalgsi))
+  
+  (rule (if maximum-budget >= 0 and maximum-budget <=5 and expected-arrival is 1h and handicaped is ei and maximum-people <= 5 and preferred-transport is jalgsimatk)
+        (then best-transport is on jalgsi))
+  
+  (rule (if maximum-budget >= 0 and maximum-budget <=5 and expected-arrival is 2h and handicaped is ei and maximum-people <= 5 and preferred-transport is jalgsimatk)
+        (then best-transport is on jalgsi))
+
+  (rule (if maximum-budget >= 0 and maximum-budget <=5 and handicaped is ei and maximum-people <= 5 and preferred-transport is yhistransport)
+  (then best-transport is on jalgsi))
+  
+  (rule (if maximum-budget >= 0 and maximum-budget <=10 and expected-arrival is 1h and handicaped is ei and maximum-people <= 4 and preferred-transport is eratransport)
+        (then best-transport is on jalgsi))
+  
+  ;uber , takso jne
+        
+  (rule (if maximum-budget >= 50 and maximum-budget <=100 and expected-arrival is 30min and handicaped is ei and maximum-people <= 4 and preferred-transport is eratransport)
+        (then best-transport is on eratransport))
+  
+  (rule (if maximum-budget >= 50 and maximum-budget <=100 and expected-arrival is 5min and handicaped is ei and maximum-people <= 4 and preferred-transport is eratransport)
+        (then best-transport is on eratransport))
+
+  (rule (if maximum-budget >= 50 and maximum-budget <=100 and expected-arrival is 30min and handicaped is jah and maximum-people <= 4 and preferred-transport is eratransport)
+        (then best-transport is on eratransport))
+  
+  (rule (if maximum-budget >= 50 and maximum-budget <=100 and expected-arrival is 5min and handicaped is jah and maximum-people <= 4 and preferred-transport is eratransport)
+        (then best-transport is on eratransport))
+
+
+      ;yhistranspordi reeglid
+   
+  (rule (if maximum-budget >= 10 and maximum-budget <= 49 and expected-arrival is 30min handicaped is ei and maximum-people <= 5 and preferred-transport is yhistransport)
+        (then best-transport is on yhistransport))
+  (rule (if maximum-budget >= 10 and maximum-budget <= 49 and expected-arrival is 30min handicaped is jah and maximum-people <= 5 and preferred-transport is yhistransport)
+        (then best-transport is on yhistransport))
+  (rule (if maximum-budget >= 10 and maximum-budget <= 49 and expected-arrival is 1h handicaped is ei and maximum-people <= 5 and preferred-transport is yhistransport)
+        (then best-transport is on yhistransport))
+  (rule (if maximum-budget >= 10 and maximum-budget <= 49 and expected-arrival is 1h handicaped is jah and maximum-people <= 5 and preferred-transport is yhistransport)
+        (then best-transport is on yhistransport))
+  (rule (if maximum-budget >= 10 and maximum-budget <= 49 and expected-arrival is 2h handicaped is jah and maximum-people <= 5 and preferred-transport is yhistransport)
+        (then best-transport is on yhistransport))
+  (rule (if maximum-budget >= 10 and maximum-budget <= 49 and expected-arrival is 2h handicaped is ei and maximum-people <= 5 and preferred-transport is yhistransport)
+        (then best-transport is on yhistransport))
+
+
   ; Rules product best product price
 
   ; Rules product best shop location and name
@@ -233,21 +313,23 @@
 
 (deffacts any-attributes
   (attribute (name best-transport) (value any)))
-  ;(attribute (name best-transport) (value any))
 
 (deftemplate TRANSPORTS::transport
   (slot name (default ?NONE))
-  (multislot transporttype(default any)))
+  (multislot transporttype (default any)))
 
 (deffacts TRANSPORTS::the-transport-list 
-  (transport (name Jalgsimatk) (transporttype on-foot)))
+  (transport (name Jalgsimatk) (transporttype onfoot)))
   
 (defrule TRANSPORTS::generate-transports
   (transport (name ?name)
-        (transporttype $? ?c $?))
-  (attribute (name best-transport) (value ?c) (certainty ?certainty-1))
+        (transporttype $? ?s $?))
+  (attribute (name best-transport) (value ?s) (certainty ?certainty-1))
   =>
   (assert (attribute (name transport) (value ?name))))
+
+
+
 
 ;;*****************************
 ;;* PRINT SELECTED  RULES  prindime tulemused  peab muutma *
@@ -263,7 +345,7 @@
    (assert (phase print-wines)))
 
 (defrule PRINT-RESULTS::print-wine ""
-  ?rem <- (attribute (name transport) (value ?name) (certainty ?per))		  
+  ?rem <- (attribute (name dd) (value ?name) (certainty ?per))		  
   (not (attribute (name transport) (certainty ?per1&:(> ?per1 ?per))))
   =>
   (retract ?rem)
