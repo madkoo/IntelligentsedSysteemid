@@ -49,6 +49,13 @@
 
 (defmodule QUESTIONS (import MAIN ?ALL) (export ?ALL))
 
+(deftemplate QUESTION::range-question
+  (slot attribute (default ?NONE))
+  (slot the-question (default ?NONE))
+  (multislot valid-answers (type NUMBER) (default ?NONE))
+  (slot already-asked (default FALSE))
+  (multislot precursors (default ?DERIVE)))
+
 (deftemplate QUESTIONS::question
    (slot attribute (default ?NONE))
    (slot the-question (default ?NONE))
@@ -56,6 +63,36 @@
    (slot already-asked (default FALSE))
    (multislot precursors (default ?DERIVE)))
    
+
+(defrule QUESTIONS::ask-a-question
+   ?f <- (range-question (already-asked FALSE)
+                   (precursors)
+                   (the-question ?the-question)
+                   (attribute ?the-attribute)
+                   (valid-answers $?valid-answers))
+   =>
+   (modify ?f (already-asked TRUE))
+   (assert (attribute (name ?the-attribute)
+                      (value (ask-question ?the-question ?valid-answers)))))
+
+(defrule QUESTIONS::precursor-is-satisfied
+   ?f <- (range-question (already-asked FALSE)
+                   (precursors ?name is ?value $?rest))
+         (attribute (name ?name) (value ?value))
+   =>
+   (if (eq (nth 1 ?rest) and) 
+    then (modify ?f (precursors (rest$ ?rest)))
+    else (modify ?f (precursors ?rest))))
+
+(defrule QUESTIONS::precursor-is-not-satisfied
+   ?f <- (range-question (already-asked FALSE)
+                   (precursors ?name is-not ?value $?rest))
+         (attribute (name ?name) (value ~?value))
+   =>
+   (if (eq (nth 1 ?rest) and) 
+    then (modify ?f (precursors (rest$ ?rest)))
+    else (modify ?f (precursors ?rest))))
+
 (defrule QUESTIONS::ask-a-question
    ?f <- (question (already-asked FALSE)
                    (precursors)
@@ -94,9 +131,18 @@
 
 (deffacts TEST-QUESTIONS::question-attributes   
 
-  (question (attribute maximum-budget)
-            (the-question "Kui palju sa plaanid kulutada? ")
-            (valid-answers 0 1 2 3 4 5 6 7 8 9 10))) 
+(question (attribute expected-arrival)
+            (the-question "Kui suur valik on poes sinu kaup, kas kauplus, supermarket, hypermarket?")
+            (valid-answers kauplus supermarket hypermarket)))
+  (question (attribute expected-arrival)
+            (the-question "Kui kiiresti soovid poodi jõuda, 5min, 30min, 1h, 2h ")
+            (valid-answers 5min 30min 1h 2h))) 
+  (question (attribute preferred-transport)
+            (the-question "Millist transporti soovid kasutada kaubale järgi minemiseks, kas jalgsimatk, yhistransport, eratransport voi auto?")
+            (valid-answers jalgsimatk yhistransport eratransport auto))) 
+  (range-question (attribute maximum-budget)
+            (the-question "Kui suure summa oled valmis kulutada kaubale ja transpordile poodi? 5, 10, 25 ,50 ,100")
+            (valid-answers 5 10 25 50 100))) 
 
  
 ;;******************
