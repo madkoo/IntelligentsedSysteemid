@@ -31,7 +31,7 @@
   (declare (salience 10000))
   =>
   (set-fact-duplication TRUE)
-  (focus QUESTIONS CHOOSE-SHOP TRANSPORTS PRINT-RESULTS))
+  (focus QUESTIONS CHOOSE-SHOP SHOPS PRINT-RESULTS))
 
 (defrule MAIN::combine-certainties ""
   (declare (salience 100)
@@ -137,7 +137,7 @@
             (valid-answers jah ei))
 (question (attribute handicaped)
             (the-question "Kas lähed ratastooli, vankri, mÃµlemaga vÃµi ilma?(vanker, ratastool, molemad, ei)")
-            (valid-answers ratastool vanker molemad ei ))
+            (valid-answers ratastool vanker molemad ei))
 (question (attribute maximum-people)
             (the-question "Kui palju inimesi poodi tootele järgi läheb?(nt 1,2,3,4,5)")
             (valid-answers 1 2 3 4 5))
@@ -161,7 +161,7 @@
             (valid-answers jalgsimatk yhistransport eratransport auto))
   (number-question (attribute maximum-budget)
             (the-question "Kui suure summa oled valmis kulutada kaubale ja transpordile poodi? 5, 10, 25 ,50 ,100")
-            (valid-answers 5 10 25 50 100))) 
+            (valid-answers 5 10 25 50 100)))
 
 
  
@@ -384,21 +384,21 @@
    =>
    (printout t t)
    (printout t " -------------------------------" t)
-   (assert (phase print-wines)))
+   (assert (phase print-shops)))
 
-(defrule PRINT-RESULTS::print-wine ""
-  ?rem <- (attribute (name dd) (value ?name) (certainty ?per))		  
-  (not (attribute (name transport) (certainty ?per1&:(> ?per1 ?per))))
+(defrule PRINT-RESULTS::print-shops ""
+  ?rem <- (attribute (name shop) (value ?name) (certainty ?per))		  
+  (not (attribute (name shop) (certainty ?per1&:(> ?per1 ?per))))
   =>
   (retract ?rem)
   (format t " %-24s %2d%%%n" ?name ?per))
 
-(defrule PRINT-RESULTS::remove-poor-wine-choices ""
-  ?rem <- (attribute (name transport) (certainty ?per&:(< ?per 20)))
+(defrule PRINT-RESULTS::remove-poor-shop-choices ""
+  ?rem <- (attribute (name shop) (certainty ?per&:(< ?per 20)))
   =>
   (retract ?rem))
 
 (defrule PRINT-RESULTS::end-spaces ""
-   (not (attribute (name transport)))
-   =>
-   (printout t t))
+  (not (attribute (name shop)))
+  =>
+  (printout t t))
