@@ -256,7 +256,7 @@
         (then best-transport is on jalgsi))
   
   (rule (if maximum-budget >= 0 and maximum-budget <=5 and expected-arrival is 2h and handicaped is ei and maximum-people <= 5 and preferred-transport is jalgsimatk)
-        (then best-transport is on jalgsi))
+        (then best-transport is jalgsi))
 
   (rule (if maximum-budget >= 0 and maximum-budget <=5 and handicaped is ei and maximum-people <= 5 and preferred-transport is yhistransport)
   (then best-transport is on jalgsi))
@@ -306,30 +306,72 @@
 )
 
 ;;************************
-;;* TRANSPORTS SELECTION RULES  PEAME MUUTMA MINGIT MOODI*
+;;* SHOPS SELECTION RULES
 ;;************************
 
-(defmodule TRANSPORTS (import MAIN ?ALL))
+(defmodule SHOPS (import MAIN ?ALL))
 
+;valjundmoisted
 (deffacts any-attributes
-  (attribute (name best-transport) (value any)))
-
-(deftemplate TRANSPORTS::transport
-  (slot name (default ?NONE))
-  (multislot transporttype (default any)))
-
-(deffacts TRANSPORTS::the-transport-list 
-  (transport (name Jalgsimatk) (transporttype onfoot)))
+  (attribute (name product-budget) (value any))
+  (attribute (name best-transport) (value any))
+  (attribute (name transport-budget) (value any))
+  (attribute (name best-transport-time) (value any))
+  (attribute (name parking-wish) (value any))
+  (attribute (name parking-can-pay) (value any))
+  (attribute (name language) (value any))
+  (attribute (name wheelchair-or-pram) (value any))
+  (attribute (name best-crowd) (value any))
+  (attribute (name best-selection-size) (value any))
   
-(defrule TRANSPORTS::generate-transports
-  (transport (name ?name)
-        (transporttype $? ?s $?))
-  (attribute (name best-transport) (value ?s) (certainty ?certainty-1))
+  )
+
+;poodide valjad
+(deftemplate SHOPS::shop
+  (slot name (default ?NONE))
+  (multislot product-price(default any))
+  (multislot transport(default any))
+  (multislot transport-price(default any))
+  (multislot transport-time(default any))
+  (multislot parking(default any))
+  (multislot parking-charge(default any))
+  (multislot service-language(default any))
+  (multislot wheelchair-accessibility(default any))
+  (multislot crowd(default any))
+  (multislot selection-size(default any)))
+
+; poodide nimekiri
+(deffacts SHOPS::the-shop-list 
+  (shop (name Rimi) (product-price 10) (transport jalgsi) (transport-price 0) (transport-time 1h) (parking yes) (parking-charge yes) 
+    (service-language estonian) (wheelchair-accessibility no) (crowd no) (selection-size hypermarket))
+  (shop (name Felixi-kaubad) (product-price 15) (transport yhistransport) (transport-price 3) (transport-time 10min) (parking no)
+    (service-language estonian) (wheelchair-accessibility yes) (crowd no) (selection-size kauplus))
+)
+  
+(defrule SHOPS::generate-shops
+  (shop (name ?name)
+        (product-price $? ?pp $?)
+        (transport $? ?t $?)
+        (transport-price $? ?tp $?)
+        (transport-time $? ?tt $?)
+        (parking $? ?p $?)
+        (parking-charge $? ?pc $?)
+        (service-language $? ?sl $?)
+        (wheelchair-accessibility $? ?wa $?)
+        (crowd $? ?c $?)
+        (selection-size $? ?ss $?))
+  (attribute (name product-budget) (value ?pp))
+  (attribute (name best-transport) (value ?t))
+  (attribute (name transport-budget) (value ?tp))
+  (attribute (name best-transport-time) (value ?tt))
+  (attribute (name parking-wish) (value ?p))
+  (attribute (name parking-can-pay) (value ?pc))
+  (attribute (name language) (value ?sl))
+  (attribute (name wheelchair-or-pram) (value ?wa))
+  (attribute (name best-crowd) (value ?c))
+  (attribute (name best-selection-size) (value ?ss))
   =>
-  (assert (attribute (name transport) (value ?name))))
-
-
-
+  (assert (attribute (name shop) (value ?name))))
 
 ;;*****************************
 ;;* PRINT SELECTED  RULES  prindime tulemused  peab muutma *
@@ -360,5 +402,3 @@
    (not (attribute (name transport)))
    =>
    (printout t t))
-
-
