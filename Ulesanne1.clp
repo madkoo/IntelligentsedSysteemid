@@ -8,12 +8,12 @@
 ;;* DEFFUNCTIONS *
 ;;****************
 
-(deffunction MAIN::ask-question (?question ?allowed-values ?number-question ?allowed-values)
-   (printout t ?question and ?number-question)
+(deffunction MAIN::ask-question (?question ?allowed-values)
+   (printout t ?question)
    (bind ?answer (read))
    (if (lexemep ?answer) then (bind ?answer (lowcase ?answer)))
    (while (not (member ?answer ?allowed-values)) do
-     (printout t ?question and ?number-question)
+     (printout t ?question)
       (bind ?answer (read))
       (if (lexemep ?answer) then (bind ?answer (lowcase ?answer))))
    ?answer)
@@ -50,41 +50,6 @@
 (defmodule QUESTIONS (import MAIN ?ALL) (export ?ALL))
 
 
-(deftemplate QUESTIONS::number-question
-   (slot attribute (default ?NONE))
-   (slot the-question (default ?NONE))
-   (multislot valid-answers (type NUMBER) (default ?NONE))
-   (slot already-asked (default FALSE))
-   (multislot precursors (default ?DERIVE)))
-
-    (defrule QUESTIONS::ask-a-question2
-   ?f <- (number-question (already-asked FALSE)
-                   (precursors)
-                   (the-question ?the-question)
-                   (attribute ?the-attribute)
-                   (valid-answers $?valid-answers))
-   =>
-   (modify ?f (already-asked TRUE))
-   (assert (attribute (name ?the-attribute)
-                      (value (ask-question ?the-question ?valid-answers)))))
-
-(defrule QUESTIONS::precursor-is-satisfied2
-   ?f <- (number-question (already-asked FALSE)
-                   (precursors ?name is ?value $?rest))
-         (attribute (name ?name) (value ?value))
-   =>
-   (if (eq (nth 1 ?rest) and) 
-    then (modify ?f (precursors (rest$ ?rest)))
-    else (modify ?f (precursors ?rest))))
-
-(defrule QUESTIONS::precursor-is-not-satisfied2
-   ?f <- (number-question (already-asked FALSE)
-                   (precursors ?name is-not ?value $?rest))
-         (attribute (name ?name) (value ~?value))
-   =>
-   (if (eq (nth 1 ?rest) and) 
-    then (modify ?f (precursors (rest$ ?rest)))
-    else (modify ?f (precursors ?rest))))
 
 
 (deftemplate QUESTIONS::question
@@ -159,7 +124,7 @@
   (question (attribute preferred-transport)
             (the-question "Millist transporti soovid kasutada kaubale järgi minemiseks, kas jalgsimatk, yhistransport, eratransport voi auto?")
             (valid-answers jalgsimatk yhistransport eratransport auto))
-  (number-question (attribute maximum-budget)
+  (question (attribute maximum-budget)
             (the-question "Kui suure summa oled valmis kulutada kaubale ja transpordile poodi? 5, 10, 25 ,50 ,100")
             (valid-answers 5 10 25 50 100)))
 
