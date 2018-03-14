@@ -48,16 +48,6 @@ def askQuestions():
 
     answer = input("Kui suure summa oled valmis  kulutada kaubale ja transpordile poodi?")
     maximumBudget = int(answer)
-
-    answer = input("Kui palju inimesi poodi tootele järgi läheb?(nt 1,2,3,4,5)")
-    
-    answer = input("Mis  keelt sa räägid? (inglise, vene, eesti, prantsuse, itaalia, hispaania)")
-    
-    answer = input("Kas on oluline, et piirkond oleks turvaline? (jah/ei)")
-    
-
-
-
     answer = input("Mida soovid osta, kas piim, leib, sai, viin?")
     product = answer     
     answer = input("Kui suure summa oled valmis kulutada kaubale ja transpordile poodi?")
@@ -67,9 +57,6 @@ def askQuestions():
     answer = input("Kui kiiresti soovid poodi jõuda, 5min, 30min, 1h, 2h?")
     expectedArrival = answer
     answer = input("Millist transporti soovid kasutada kaubale järgi minemiseks, kas jalgsimatk, yhistransport, eratransport voi auto?")
-
-    answer = input("Kui suure summa oled valmis  kulutada kaubale ja transpordile poodi? 5, 10, 25 ,50 ,100")
-
     preferredTransport = answer
     answer = input("Kui palju inimesi poodi tootele järgi läheb?")
     maximumPeople = int(answer)
@@ -79,7 +66,6 @@ def askQuestions():
     area = answer
     answer = input("Kas lähed ratastooli, vankri, mõlemaga või ilma?(vanker, ratastool, molemad, ei)")
     handicaped = answer
-
     answer = input("Kas eelistad, et poes oleks võimalikult vähe rahvast? jah/ei")
     popularity = answer
     inputs = Inputs(maximumBudget, preferredTransport, expectedArrival, preferredSelectionSize, product,area, language,maximumPeople, handicaped, popularity)
