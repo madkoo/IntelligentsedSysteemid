@@ -5,15 +5,15 @@ class Shop():
     
     def __init__(self, product_price, transport, transport_price, 
                  transport_time, parking, parking_charge, service_language, wheelchair_accessibility, crowd):
-        self.product_price
-        self.transport
-        self.transport_price
-        self.transport_time
-        self.parking
-        self.parking_charge
-        self.service_language
-        self.wheelchair_accessibility
-        self.crowd
+        self.product_price = product_price
+        self.transport = product_price
+        self.transport_price = transport_price
+        self.transport_time = transport_time
+        self.parking = parking
+        self.parking_charge = parking_charge
+        self.service_language = service_language
+        self.wheelchair_accessibility = wheelchair_accessibility
+        self.crowd = crowd
         
 class Inputs():
     
