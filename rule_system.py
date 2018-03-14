@@ -1,8 +1,7 @@
 class Shop():
     
-    def __init__(self, product_price, transport_price, 
-                 transport_time, parking, parking_charge, service_language, wheelchair_accessibility, crowd):
-        self.name = product_price
+    def __init__(self, shopName, product_price, transport_price, transport_time, parking, parking_charge, service_language, wheelchair_accessibility, crowd):
+        self.name = shopName
         self.product_price = product_price
         self.transport_price = transport_price
         self.transport_time = transport_time
@@ -14,7 +13,7 @@ class Shop():
         
 class Inputs():
     
-    def __init__(self, maximumBudget, preferredTransport, expectedArrival, preferredSelectionSize, product, area,language,maximumPeople, handicaped,popularity):
+    def __init__(self, maximumBudget, preferredTransport, expectedArrival, preferredSelectionSize, product, area,language, maximumPeople, handicaped,popularity):
         self.maximumBudget = maximumBudget
         self.preferredTransport = preferredTransport
         self.expectedArrival = expectedArrival
@@ -22,7 +21,7 @@ class Inputs():
         self.product = product
         self.area = area
         self.language = language
-        self.maximumPeople = maximumPeople
+        self.inputs.maximumPeople = inputs.maximumPeople
         self.handicaped = handicaped
         self.popularity = popularity
         
@@ -49,43 +48,144 @@ def main():
     printResults(shopsPoints)
 
 def askQuestions():
-
-    answer = input("Kui suure summa oled valmis  kulutada kaubale ja transpordile poodi?")
-    maximumBudget = int(answer)
     answer = input("Mida soovid osta, kas piim, leib, sai, viin?")
     product = answer     
     answer = input("Kui suure summa oled valmis kulutada kaubale ja transpordile poodi?")
-    maximumBudget = int(answer)
+    inputs.maximumBudget = int(answer)
     answer = input("Kui suur valik on poes sinu kaup, kas kauplus, supermarket, hypermarket?")
     preferredSelectionSize = answer
     answer = input("Kui kiiresti soovid poodi jõuda, 5min, 30min, 1h, 2h?")
-    expectedArrival = answer
+    inputs.expectedArrival = answer
     answer = input("Millist transporti soovid kasutada kaubale järgi minemiseks, kas jalgsimatk, yhistransport, eratransport voi auto?")
     preferredTransport = answer
     answer = input("Kui palju inimesi poodi tootele järgi läheb?")
-    maximumPeople = int(answer)
+    inputs.maximumPeople = int(answer)
     answer = input("Mis keelt sa räägid? (inglise, vene, eesti, prantsuse, itaalia, hispaania)")
     language = answer
     answer = input("Kas on oluline, et piirkond oleks turvaline? (jah/ei)")
     area = answer
     answer = input("Kas lähed ratastooli, vankri, mõlemaga või ilma?(vanker, ratastool, molemad, ei)")
-    handicaped = answer
+    inputs.handicaped = answer
     answer = input("Kas eelistad, et poes oleks võimalikult vähe rahvast? jah/ei")
     popularity = answer
-    inputs = Inputs(maximumBudget, preferredTransport, expectedArrival, preferredSelectionSize, product,area, language,maximumPeople, handicaped, popularity)
+    inputs = Inputs(inputs.maximumBudget, preferredTransport, inputs.expectedArrival, preferredSelectionSize, product,area, language,inputs.maximumPeople, inputs.handicaped, popularity)
     return inputs
 
 def rules(inputs):
     outputs = Outputs()
-    if inputs.maximumBudget < 5:
+    if inputs.inputs.maximumBudget < 5:
         outputs.productBudget = 5
-        
+
+#jalksi
+
+    if (inputs.maximumBudget >= 0 and inputs.maximumBudget <=10 and inputs.expectedArrival == "5min"
+        and inputs.handicaped == "ei" and inputs.maximumPeople <= 2 and inputs.preferredTransport == "jalgsimatk"):
+        outputs.bestTransport = "jalksimatk"
+
+  
+    if (inputs.maximumBudget >= 0 and inputs.maximumBudget <= 5 and inputs.expectedArrival == "30min" and inputs.handicaped == "ei" and inputs.maximumPeople <= 5 and inputs.preferredTransport == "jalgsimatk"):
+       outputs.bestTransport = "jalksimatk"
+  
+    if (inputs.maximumBudget >= 0 and inputs.maximumBudget <= 5 and inputs.expectedArrival == "1h" 
+      and inputs.handicaped == "ei" and inputs.maximumPeople <= 5 and inputs.preferredTransport == "jalgsimatk"):
+          outputs.bestTransport = "jalksimatk"
+
+    if (inputs.maximumBudget >= 0 and inputs.maximumBudget <= 5 and inputs.expectedArrival == "2h" 
+        and inputs.handicaped == "ei" and inputs.maximumPeople <= 5 and inputs.preferredTransport ==  "jalgsimatk"):
+          outputs.bestTransport = "jalksimatk"
+
+    if (inputs.maximumBudget >= 0 and inputs.maximumBudget <= 5 and inputs.handicaped ==  "ei"
+        and inputs.expectedArrival == "2h" and inputs.maximumPeople <= 5 and inputs.preferredTransport == "yhistransport"):
+          outputs.bestTransport = "jalksimatk"
+  
+    if (inputs.maximumBudget >= 0 and inputs.maximumBudget <=10 and inputs.expectedArrival == "1h"
+        and inputs.handicaped == "ei" and inputs.maximumPeople <= 4 and inputs.preferredTransport ==  "eratransport"):
+          outputs.bestTransport = "jalksimatk"
+  
+  
+        #takso
+    if (inputs.maximumBudget >= 50 and inputs.maximumBudget <=100 and inputs.expectedArrival == "30min"
+      and inputs.handicaped == "ei" and inputs.maximumPeople <= 4 and inputs.preferredTransport == "eratransport"):
+          outputs.bestTransport = "eratransport"
+  
+    if (inputs.maximumBudget >= 50 and inputs.maximumBudget <=100 and inputs.expectedArrival == "5min"
+      and inputs.handicaped == "ei" and inputs.maximumPeople <= 4 and inputs.preferredTransport == "eratransport"):
+          outputs.bestTransport = "eratransport"
+
+    if (inputs.maximumBudget >= 50 and inputs.maximumBudget <=100 and inputs.expectedArrival == "30min" 
+      and inputs.handicaped == "jah" and inputs.maximumPeople <= 4 and inputs.preferredTransport == "eratransport"):
+          outputs.bestTransport = "eratransport"
+  
+    if (inputs.maximumBudget >= 50 and inputs.maximumBudget <=100 and inputs.expectedArrival == "5min" 
+      and inputs.handicaped == "jah" and inputs.maximumPeople <= 4 and inputs.preferredTransport == "eratransport"):
+          outputs.bestTransport = "eratransport"
+
+
+
+   #yhistransport
+    if (inputs.maximumBudget >= 10 and inputs.maximumBudget <= 49 and inputs.expectedArrival == "30min" and inputs.handicaped == "ei"
+        and inputs.maximumPeople <= 5 and inputs.preferredTransport == "yhistransport"):
+           outputs.bestTransport = "yhistransport"
+    if (inputs.maximumBudget >= 10 and inputs.maximumBudget <= 49 and inputs.expectedArrival == "30min" and inputs.handicaped == "jah"
+        and inputs.maximumPeople <= 5 and inputs.preferredTransport == "yhistransport"):
+           outputs.bestTransport = "yhistransport"
+    if (inputs.maximumBudget >= 10 and inputs.maximumBudget <= 49 and inputs.expectedArrival == "1h" and inputs.handicaped == "ei"
+         and inputs.maximumPeople <= 5 and inputs.preferredTransport == "yhistransport"):
+            outputs.bestTransport = "yhistransport"
+    if (inputs.maximumBudget >= 10 and inputs.maximumBudget <= 49 and inputs.expectedArrival == "1h" and inputs.handicaped == "jah"
+        and inputs.maximumPeople <= 5 and inputs.preferredTransport == "yhistransport"):
+           outputs.bestTransport = "yhistransport"
+    if (inputs.maximumBudget >= 10 and inputs.maximumBudget <= 49 and inputs.expectedArrival == "2h" and inputs.handicaped == "jah"
+        and inputs.maximumPeople <= 5 and inputs.preferredTransport == "yhistransport"):
+          outputs.bestTransport = "yhistransport"
+    if (inputs.maximumBudget >= 10 and inputs.maximumBudget <= 49 and inputs.expectedArrival == "2h" and inputs.handicaped == "ei"
+        and inputs.maximumPeople <= 5 and inputs.preferredTransport == "yhistransport"):
+          outputs.bestTransport = "yhistransport"
+          
+ #enda auto
+ 
+    if (inputs.maximumBudget >= 0 and inputs.maximumBudget <= 100 and inputs.expectedArrival == "5min" 
+        and inputs.handicaped == "ei" and inputs.maximumPeople <= 5 and inputs.preferredTransport == "auto"):
+    		 outputs.bestTransport = "auto"
+ 
+    if (inputs.maximumBudget >= 0 and inputs.maximumBudget <= 100 and inputs.expectedArrival == "5min"
+        and inputs.handicaped == "jah" and inputs.maximumPeople <= 5 and inputs.preferredTransport == "auto"):
+            outputs.bestTransport = "auto"
+ 
+    if (inputs.maximumBudget >= 0 and inputs.maximumBudget <= 100 and inputs.expectedArrival == "30min"
+        and inputs.handicaped == "ei" and inputs.maximumPeople <= 5 and inputs.preferredTransport == "auto"):
+        outputs.bestTransport = "auto"
+
+
+    if (inputs.maximumBudget >= 0 and inputs.maximumBudget <= 100 and inputs.expectedArrival == "30min" 
+        and inputs.handicaped == "jah" and inputs.maximumPeople <= 5 and inputs.preferredTransport == "auto"):
+        outputs.bestTransport = "auto"
+ 
+    if (inputs.maximumBudget >= 0 and inputs.maximumBudget <= 100 and inputs.expectedArrival == "1h" 
+        and inputs.handicaped == "ei" and inputs.maximumPeople <= 5 and inputs.preferredTransport == "auto"):
+        outputs.bestTransport = "auto"
+
+    if(inputs.maximumBudget >= 0 and inputs.maximumBudget <= 100 and inputs.expectedArrival == "1h" and 
+        inputs.handicaped == "jah" and inputs.maximumPeople <= 5 and inputs.preferredTransport == "auto"):
+        outputs.bestTransport = "auto"
+
+    if (inputs.maximumBudget >= 0 and inputs.maximumBudget <= 100 and inputs.expectedArrival == "2h" 
+        and inputs.handicaped == "ei" and inputs.maximumPeople <= 5 and inputs.preferredTransport == "auto"):
+        outputs.bestTransport = "auto"
+
+ 
+    if (inputs.maximumBudget >= 0 and inputs.maximumBudget <= 100 and inputs.expectedArrival == "2h" 
+        and inputs.handicaped == "jah" and inputs.maximumPeople <= 5 and inputs.preferredTransport == "auto"):
+        outputs.bestTransport = "auto"
+
+
     return outputs
 
 def test(outputs):
     print(outputs.productBudget)
     
 def createShops():
+
     rimi = Shop("Rimi", {'piim': 10, 'leib': 7, 'sai': 5, 'viin': 10}, 0, 60, True, True, ["eesti", "vene"], False, "hypermarket")
     felixiKaubad = Shop("Felixi kaubad", {'piim': 3, 'leib': 5, 'sai': 6, 'viin': 30}, 10, 15, False, False, ["eesti"], True, "kauplus")
     selver = Shop("Selver", {'piim': 6, 'leib': 4, 'sai': 7, 'viin': 15}, 10, 15, False, False, ["eesti, hispaania , vene, prantsuse, itaalia"], True, "supermarket")
@@ -111,82 +211,6 @@ def printResults(shopsPoints):
         print(shopPoints)
 
 main()
-
-
-
-#
-#  if maximum-budget == 5:
-    
-#		
-# if maximum-budget >= 0 & maximum-budget <=10:
-#        
-#   if maximum-budget >= 10 & maximum-budget <=20:
-#        
-#       jalksi
-
-#   if maximum-budget >= 0 & maximum-budget <=10 & expected-arrival ==  "5min" & 
-#      handicaped ==  ei & maximum-people <= 2 & preferred-transport ==  jalgsimatk:
-
-#  
-#   if maximum-budget >= 0 & maximum-budget <=5 & expected-arrival ==  30min 
-#     & handicaped ==  ei & maximum-people <= 5 & preferred-transport ==  jalgsimatk:
-#       
-#  
-#   if maximum-budget >= 0 & maximum-budget <=5 & expected-arrival ==  1h 
-#   & handicaped ==  ei & maximum-people <= 5 & preferred-transport ==  jalgsimatk:
-#      
-#  
-#   if maximum-budget >= 0 & maximum-budget <=5 & expected-arrival ==  2h 
-#      & handicaped ==  ei & maximum-people <= 5 & preferred-transport ==  jalgsimatk:
-
-#
-#   if maximum-budget >= 0 & maximum-budget <=5 & handicaped ==  ei
- #     & maximum-people <= 5 & preferred-transport ==  yh== transport:
-
-#  
-#   if maximum-budget >= 0 & maximum-budget <=10 & expected-arrival ==  1h
-#     & handicaped ==  ei & maximum-people <= 4 & preferred-transport ==  eratransport:
-#       
-#  
-#  
-#        #takso
-#   if maximum-budget >= 50 & maximum-budget <=100 & expected-arrival ==  30min
-#      & handicaped ==  ei & maximum-people <= 4 & preferred-transport ==  eratransport:
-    
-#  
-#   if maximum-budget >= 50 & maximum-budget <=100 & expected-arrival ==  5min
-#      & handicaped ==  ei & maximum-people <= 4 & preferred-transport ==  eratransport:
-#        
-#
-#   if maximum-budget >= 50 & maximum-budget <=100 & expected-arrival ==  30min 
-#      & handicaped ==  jah & maximum-people <= 4 & preferred-transport ==  eratransport:
-#        
-#  
-#   if maximum-budget >= 50 & maximum-budget <=100 & expected-arrival ==  5min 
-#      & handicaped ==  jah & maximum-people <= 4 & preferred-transport ==  eratransport:
-#        
-#
-#
-
-#   yhistransport
-#   if maximum-budget >= 10 & maximum-budget <= 49 & expected-arrival ==  30min handicaped ==  ei
-#       & maximum-people <= 5 & preferred-transport ==  yh== transport:
-#        
-#   if maximum-budget >= 10 & maximum-budget <= 49 & expected-arrival ==  30min handicaped ==  jah
-#       & maximum-people <= 5 & preferred-transport ==  yh== transport:
-#        
-#   if maximum-budget >= 10 & maximum-budget <= 49 & expected-arrival ==  1h handicaped ==  ei
- #       & maximum-people <= 5 & preferred-transport ==  yh== transport:
-
-#   if maximum-budget >= 10 & maximum-budget <= 49 & expected-arrival ==  1h handicaped ==  jah
-#       & maximum-people <= 5 & preferred-transport ==  yh== transport
-
-#   if maximum-budget >= 10 & maximum-budget <= 49 & expected-arrival ==  2h handicaped ==  jah
-#        & maximum-people <= 5 & preferred-transport ==  yh== transport:
-#       
-#   if maximum-budget >= 10 & maximum-budget <= 49 & expected-arrival ==  2h handicaped ==  ei
-#       & maximum-people <= 5 & preferred-transport ==  yh== transport:
-
 
 
 
