@@ -2,6 +2,7 @@ class Shop():
     
     def __init__(self, product_price, transport_price, 
                  transport_time, parking, parking_charge, service_language, wheelchair_accessibility, crowd):
+        self.name = product_price
         self.product_price = product_price
         self.transport_price = transport_price
         self.transport_time = transport_time
@@ -28,36 +29,25 @@ class Inputs():
 class Outputs():
     
     def __init__(self):
+        self.product = None
         self.productBudget = None
-        self.best_transport = None
-        self.transport_budget = None
-        self.best_transport_time = None
-        self.parking_wish = None
-        self.parking_can_pay = None
+        self.transportBudget = None
+        self.bestTransportTime = None
+        self.parkingWish = None
+        self.parkingCanPay = None
         self.language = None
-        self.wheelchair_or_pram = None
-        self.best_crowd = None
-        self.best_selection_size = None
+        self.wheelchairOrPram = None
+        self.bestCrowd = None
+        self.bestSelectionSize = None
 
 def main():
     inputs = askQuestions()
     outputs = rules(inputs)
-    test(outputs)
+    #test(outputs)
+    shops = createShops()
+    getShopsPoints(outputs, shops)
 
 def askQuestions():
-
-    answer = input("Kui suure summa oled valmis  kulutada kaubale ja transpordile poodi?")
-    inputs.maximumBudget = int(answer)
-
-    answer = input("Kui palju inimesi poodi tootele järgi läheb?(nt 1,2,3,4,5)")
-    
-    answer = input("Mis  keelt sa räägid? (inglise, vene, eesti, prantsuse, itaalia, hispaania)")
-    
-    answer = input("Kas on oluline, et piirkond oleks turvaline? (jah/ei)")
-    
-
-
-
     answer = input("Mida soovid osta, kas piim, leib, sai, viin?")
     product = answer     
     answer = input("Kui suure summa oled valmis kulutada kaubale ja transpordile poodi?")
@@ -67,9 +57,6 @@ def askQuestions():
     answer = input("Kui kiiresti soovid poodi jõuda, 5min, 30min, 1h, 2h?")
     inputs.expectedArrival = answer
     answer = input("Millist transporti soovid kasutada kaubale järgi minemiseks, kas jalgsimatk, yhistransport, eratransport voi auto?")
-
-    answer = input("Kui suure summa oled valmis  kulutada kaubale ja transpordile poodi? 5, 10, 25 ,50 ,100")
-
     preferredTransport = answer
     answer = input("Kui palju inimesi poodi tootele järgi läheb?")
     inputs.maximumPeople = int(answer)
@@ -79,7 +66,6 @@ def askQuestions():
     area = answer
     answer = input("Kas lähed ratastooli, vankri, mõlemaga või ilma?(vanker, ratastool, molemad, ei)")
     inputs.handicaped = answer
-
     answer = input("Kas eelistad, et poes oleks võimalikult vähe rahvast? jah/ei")
     popularity = answer
     inputs = Inputs(inputs.maximumBudget, preferredTransport, inputs.expectedArrival, preferredSelectionSize, product,area, language,inputs.maximumPeople, inputs.handicaped, popularity)
@@ -199,11 +185,29 @@ def test(outputs):
     print(outputs.productBudget)
     
 def createShops():
-    rimi = Shop({'piim': 10, 'leib': 7, 'sai': 5, 'viin': 10}, 0, 60, True, True, ["eesti", "vene"], False, "hypermarket")
-    felixiKaubad = Shop({'piim': 3, 'leib': 5, 'sai': 6, 'viin': 30}, 10, 15, False, False, ["eesti"], True, "kauplus")
-    Selver = Shop({'piim': 6, 'leib': 4, 'sai': 7, 'viin': 15}, 10, 15, False, False, ["eesti, hispaania , vene, prantsuse, itaalia"], True, "supermarket")
-    Prisma = Shop({'piim': 2, 'leib': 6, 'sai': 8, 'viin': 17}, 10, 15, False, False, ["eesti, inglise, vene, hispaania"], True, "supermarket")
-    Kaubakeskus = Shop({'piim': 12, 'leib': 3, 'sai': 4, 'viin': 8}, 10, 15, False, False, ["eesti"], True, "kauplus")
-    Ica = Shop({'piim': 9, 'leib': 9, 'sai': 4, 'viin': 25}, 0, 60, True, True, ["eesti", "vene, inglise, prantsuse"], False, "hypermarket")
+
+    rimi = Shop("Rimi", {'piim': 10, 'leib': 7, 'sai': 5, 'viin': 10}, 0, 60, True, True, ["eesti", "vene"], False, "hypermarket")
+    felixiKaubad = Shop("Felixi kaubad", {'piim': 3, 'leib': 5, 'sai': 6, 'viin': 30}, 10, 15, False, False, ["eesti"], True, "kauplus")
+    selver = Shop("Selver", {'piim': 6, 'leib': 4, 'sai': 7, 'viin': 15}, 10, 15, False, False, ["eesti, hispaania , vene, prantsuse, itaalia"], True, "supermarket")
+    prisma = Shop("Prisma", {'piim': 2, 'leib': 6, 'sai': 8, 'viin': 17}, 10, 15, False, False, ["eesti, inglise, vene, hispaania"], True, "supermarket")
+    kaubakeskus = Shop("Kaubakeskus", {'piim': 12, 'leib': 3, 'sai': 4, 'viin': 8}, 10, 15, False, False, ["eesti"], True, "kauplus")
+    ica = Shop("Ica", {'piim': 9, 'leib': 9, 'sai': 4, 'viin': 25}, 0, 60, True, True, ["eesti", "vene, inglise, prantsuse"], False, "hypermarket")
+    
+    shops = [rimi, felixiKaubad, selver, prisma, kaubakeskus, ica]
+    return shops
+
+def getShopsPoints(outputs, shops):
+    shopsPoints = []
+    
+    for shop in shops:
+        shopPoints = 0
+        if shop.product_price[outputs.product] < outputs.productBudget:
+            shopPoints += 10
+        shopsPoints.append({shop.name: shopPoints})
+    return shopsPoints
+
 main()
+
+
+
 
