@@ -45,7 +45,8 @@ def main():
     outputs = rules(inputs)
     #test(outputs)
     shops = createShops()
-    getShopsPoints(outputs, shops)
+    shopsPoints = getShopsPoints(outputs, shops)
+    printResults(shopsPoints)
 
 def askQuestions():
 
@@ -104,6 +105,10 @@ def getShopsPoints(outputs, shops):
             shopPoints += 10
         shopsPoints.append({shop.name: shopPoints})
     return shopsPoints
+
+def printResults(shopsPoints):
+    for shopPoints in shopsPoints:
+        print(shopPoints)
 
 main()
 
