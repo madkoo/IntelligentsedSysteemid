@@ -43,7 +43,7 @@ def askQuestions():
 
     answer = input("Mida soovid osta, kas piim, leib, sai, viin?")
     product = answer     
-    answer = input("Kui suure summa oled valmis kulutada kaubale ja transpordile poodi? 5, 10, 25 ,50 ,100")
+    answer = input("Kui suure summa oled valmis kulutada kaubale ja transpordile poodi?")
     maximumBudget = int(answer)
     answer = input("Kui suur valik on poes sinu kaup, kas kauplus, supermarket, hypermarket?")
     preferredSelectionSize = answer
@@ -51,7 +51,7 @@ def askQuestions():
     expectedArrival = answer
     answer = input("Millist transporti soovid kasutada kaubale järgi minemiseks, kas jalgsimatk, yhistransport, eratransport voi auto?")
     preferredTransport = answer
-    answer = input("Kui palju inimesi poodi tootele järgi läheb?(nt 1,2,3,4,5)")
+    answer = input("Kui palju inimesi poodi tootele järgi läheb?")
     maximumPeople = int(answer)
     answer = input("Mis keelt sa räägid? (inglise, vene, eesti, prantsuse, itaalia, hispaania)")
     language = answer
