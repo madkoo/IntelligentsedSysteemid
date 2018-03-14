@@ -1,6 +1,4 @@
 
-maximumBudget = 0
-
 productBudget = 0
 
 class Shop():
@@ -16,18 +14,26 @@ class Shop():
         self.service_language = service_language
         self.wheelchair_accessibility = wheelchair_accessibility
         self.crowd = crowd
+        
+class Inputs():
+    
+    def __init__(self, maximumBudget):
+        self.maximumBudget = maximumBudget
+        
+class Outputs():
+    
+    def __init__(self):
+        self.productBudget = 0
 
 def main():
-    askQuestions()
-    rules()
-    test()
+    inputs = askQuestions()
+    outputs = rules(inputs)
+    test(outputs)
 
 def askQuestions():
-    global maximumBudget
     answer = input("Kui suure summa oled valmis kulutada kaubale ja transpordile poodi?")
     maximumBudget = int(answer)
-    
-    
+
     answer = input("Kui palju inimesi poodi tootele järgi läheb?(nt 1,2,3,4,5)")
     
     answer = input("Mis keelt sa räägid? (inglise, vene, eesti, prantsuse, itaalia, hispaania)")
@@ -41,14 +47,17 @@ def askQuestions():
     answer = input("Kui suure summa oled valmis kulutada kaubale ja transpordile poodi? 5, 10, 25 ,50 ,100")
     answer = input("Kas eelistad, et poes oleks võimalikult vähe rahvast? jah/ei")
 
-    
+    inputs = Inputs(maximumBudget)
+    return inputs
 
-def rules():
-    global productBudget
-    if maximumBudget < 5:
-        productBudget = 5
+def rules(inputs):
+    outputs = Outputs()
+    if inputs.maximumBudget < 5:
+        outputs.productBudget = 5
+        
+    return outputs
 
-def test():
-    print(productBudget)
+def test(outputs):
+    print(outputs.productBudget)
 
 main()
