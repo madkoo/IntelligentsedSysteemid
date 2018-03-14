@@ -2,6 +2,7 @@ class Shop():
     
     def __init__(self, product_price, transport_price, 
                  transport_time, parking, parking_charge, service_language, wheelchair_accessibility, crowd):
+        self.name = product_price
         self.product_price = product_price
         self.transport_price = transport_price
         self.transport_time = transport_time
@@ -28,8 +29,8 @@ class Inputs():
 class Outputs():
     
     def __init__(self):
+        self.product = None
         self.productBudget = None
-        self.bestTransport = None
         self.transportBudget = None
         self.bestTransportTime = None
         self.parkingWish = None
@@ -42,7 +43,9 @@ class Outputs():
 def main():
     inputs = askQuestions()
     outputs = rules(inputs)
-    test(outputs)
+    #test(outputs)
+    shops = createShops()
+    getShopsPoints(outputs, shops)
 
 def askQuestions():
 
@@ -82,12 +85,26 @@ def test(outputs):
     print(outputs.productBudget)
     
 def createShops():
-    rimi = Shop({'piim': 10, 'leib': 7, 'sai': 5, 'viin': 10}, 0, 60, True, True, ["eesti", "vene"], False, "hypermarket")
-    felixiKaubad = Shop({'piim': 3, 'leib': 5, 'sai': 6, 'viin': 30}, 10, 15, False, False, ["eesti"], True, "kauplus")
-    Selver = Shop({'piim': 6, 'leib': 4, 'sai': 7, 'viin': 15}, 10, 15, False, False, ["eesti, hispaania , vene, prantsuse, itaalia"], True, "supermarket")
-    Prisma = Shop({'piim': 2, 'leib': 6, 'sai': 8, 'viin': 17}, 10, 15, False, False, ["eesti, inglise, vene, hispaania"], True, "supermarket")
-    Kaubakeskus = Shop({'piim': 12, 'leib': 3, 'sai': 4, 'viin': 8}, 10, 15, False, False, ["eesti"], True, "kauplus")
-    Ica = Shop({'piim': 9, 'leib': 9, 'sai': 4, 'viin': 25}, 0, 60, True, True, ["eesti", "vene, inglise, prantsuse"], False, "hypermarket")
+    rimi = Shop("Rimi", {'piim': 10, 'leib': 7, 'sai': 5, 'viin': 10}, 0, 60, True, True, ["eesti", "vene"], False, "hypermarket")
+    felixiKaubad = Shop("Felixi kaubad", {'piim': 3, 'leib': 5, 'sai': 6, 'viin': 30}, 10, 15, False, False, ["eesti"], True, "kauplus")
+    selver = Shop("Selver", {'piim': 6, 'leib': 4, 'sai': 7, 'viin': 15}, 10, 15, False, False, ["eesti, hispaania , vene, prantsuse, itaalia"], True, "supermarket")
+    prisma = Shop("Prisma", {'piim': 2, 'leib': 6, 'sai': 8, 'viin': 17}, 10, 15, False, False, ["eesti, inglise, vene, hispaania"], True, "supermarket")
+    kaubakeskus = Shop("Kaubakeskus", {'piim': 12, 'leib': 3, 'sai': 4, 'viin': 8}, 10, 15, False, False, ["eesti"], True, "kauplus")
+    ica = Shop("Ica", {'piim': 9, 'leib': 9, 'sai': 4, 'viin': 25}, 0, 60, True, True, ["eesti", "vene, inglise, prantsuse"], False, "hypermarket")
+    
+    shops = [rimi, felixiKaubad, selver, prisma, kaubakeskus, ica]
+    return shops
+
+def getShopsPoints(outputs, shops):
+    shopsPoints = []
+    
+    for shop in shops:
+        shopPoints = 0
+        if shop.product_price[outputs.product] < outputs.productBudget:
+            shopPoints += 10
+        shopsPoints.append({shop.name: shopPoints})
+    return shopsPoints
+            
 main()
 
 
