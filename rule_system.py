@@ -1,12 +1,8 @@
-
-productBudget = 0
-
 class Shop():
     
-    def __init__(self, product_price, transport, transport_price, 
+    def __init__(self, product_price, transport_price, 
                  transport_time, parking, parking_charge, service_language, wheelchair_accessibility, crowd):
         self.product_price = product_price
-        self.transport = product_price
         self.transport_price = transport_price
         self.transport_time = transport_time
         self.parking = parking
@@ -73,5 +69,9 @@ def rules(inputs):
 
 def test(outputs):
     print(outputs.productBudget)
+    
+def createShops():
+    rimi = Shop({'piim': 10, 'leib': 7, 'sai': 5, 'viin': 10}, 0, 60, True, True, ["eesti", "vene"], False, "hypermarket")
+    felixiKaubad = Shop({'piim': 3, 'leib': 5, 'sai': 6, 'viin': 30}, 10, 15, False, False, ["eesti"], True, "kauplus")
 
 main()
