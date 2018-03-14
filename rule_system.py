@@ -29,15 +29,15 @@ class Outputs():
     
     def __init__(self):
         self.productBudget = None
-        self.best_transport = None
-        self.transport_budget = None
-        self.best_transport_time = None
-        self.parking_w== h = None
-        self.parking_can_pay = None
+        self.bestTransport = None
+        self.transportBudget = None
+        self.bestTransportTime = None
+        self.parkingWish = None
+        self.parkingCanPay = None
         self.language = None
-        self.wheelchair_or_pram = None
-        self.best_crowd = None
-        self.best_selection_size = None
+        self.wheelchairOrPram = None
+        self.bestCrowd = None
+        self.bestSelectionSize = None
 
 def main():
     inputs = askQuestions()
