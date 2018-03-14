@@ -1,8 +1,7 @@
 class Shop():
     
-    def __init__(self, product_price, transport_price, 
-                 transport_time, parking, parking_charge, service_language, wheelchair_accessibility, crowd):
-        self.name = product_price
+    def __init__(self, shopName, product_price, transport_price, transport_time, parking, parking_charge, service_language, wheelchair_accessibility, crowd):
+        self.name = shopName
         self.product_price = product_price
         self.transport_price = transport_price
         self.transport_time = transport_time
