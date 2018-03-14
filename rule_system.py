@@ -104,7 +104,7 @@ def getShopsPoints(outputs, shops):
             shopPoints += 10
         shopsPoints.append({shop.name: shopPoints})
     return shopsPoints
-            
+
 main()
 
 
