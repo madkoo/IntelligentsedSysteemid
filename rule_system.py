@@ -73,38 +73,57 @@ def askQuestions():
 
 def rules(inputs):
     outputs = Outputs()
-    if inputs.maximumBudget < 5:
-        outputs.productBudget = 5
 
     #productBudget
-    if(inputs.maximumBudget >=40):
+    if inputs.maximumBudget < 5:
+        outputs.productBudget = 5
+    
+    if (inputs.maximumBudget <=5 and inputs.maximumBudget >=40):
         outputs.productBudget = 15
+
+    if (inputs.maximumBudget <=40 and inputs.maximumBudget >=60):
+        outputs.productBudget = 25
     
     #transportBudget
-    
+
+     if inputs.maximumBudget < 5:
+        outputs.transportBudget = 0
+
     #bestTransportTime 
+    # miks 2 tykki seda sektsiooni ?
     
     #parkingCanPay 
     if (inputs.preferredTransport == "auto"):
-        parkingwish = "yes"
-        if(parkingwish == "yes" and inputs.maximumBudget >= 15):
+        outputs.parkingwish = "yes"
+        if(outputs.parkingwish == "yes" and inputs.maximumBudget >= 15):
             outputs.parkingCanPay ="yes"
         else:
             outputs.parkingCanPay ="no"
             
     if (inputs.preferredTransport == "yhistransport" or inputs.preferredTransport == "eraauto" or inputs.preferredTransport == "jalgsi"):
-        parkingwish = "no"
+        outputs.parkingwish = "no"
     
     #language
-    
+    outputs.language = inputs.language
+
+    # (vanker, ratastool, molemad, ei)")
     #wheelchairOrPram
-    
+    if(inputs.handicaped == "vanker" or inputs.handicaped == "ratastool" or inputs.handicaped == "molemad")
+        outputs.parkingwish = "yes"
+        outputs.wheelchairOrPram = inputs.handicaped
+
     #bestCrowd 
+    if(inputs.popularity == "yes" and  inputs.preferredSelectionSize="supermarket"  )
+        outputs.bestSelectionSize = "supermarket"
+    if(inputs.popularity == "yes" and  inputs.preferredSelectionSize="hypermarket"  )
+        outputs.bestSelectionSize = "hypermarket"
+    if(inputs.popularity == "no" and  inputs.preferredSelectionSize="kauplus"  )
+        outputs.bestSelectionSize = "kauplus"
     
     #bestSelectionSize 
 
     #transport time
-
+    # miks 2 tykki seda sektsiooni ?
 
     #transport price
 
