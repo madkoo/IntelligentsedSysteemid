@@ -64,7 +64,7 @@ def testInputs():
     return inputs
 
 def main():
-    inputs = testInputs()#askQuestions() ei viitsi küsimustele vastata kogu aeg
+    inputs = askQuestions() #testInputs() ei viitsi küsimustele vastata kogu aeg
     outputs = rules(inputs)
     shops = createShops()
     shopsPoints = getShopsPoints(outputs, shops)
@@ -262,40 +262,35 @@ def getShopsPoints(outputs, shops):
     shopsPoints = []
     
     # for testing
-    outs = outputs.getAllOutputs()
-    for output in outs:
-        print (output)
+#    outs = outputs.getAllOutputs()
+#    for output in outs:
+#        print (output)
         
     for shop in shops:
         shopPoints = 0
         if shop.productPrice[outputs.product] < outputs.productBudget:
             shopPoints += 10
-            print(shop.name, "good price")
         if shop.transportPrice[outputs.bestTransport] < outputs.transportBudget:
             shopPoints += 10
-            print(shop.name, "good transport price")
         if shop.transportTime[outputs.bestTransport] < outputs.bestTransportTime:
             shopPoints += 5
-            print(shop.name, "good transport time")
         if shop.parking and outputs.parkingWish:
             shopPoints += 5
-            print(shop.name, "parking")
         if not shop.parkingCharge and outputs.parkingWish and not outputs.parkingCanPay:
             shopPoints += 5
-            print(shop.name, "free parking")
         if shop.wheelchairAccessibility and outputs.wheelchairOrPram:
             shopPoints += 5
-            print(shop.name, "wheelchair")
         if shop.shopType == outputs.bestShopType:
             shopPoints +=  5
-            print(shop.name, "best type")
-        shopsPoints.append({shop.name: shopPoints})
+        shopsPoints.append({"name":shop.name, "points": shopPoints})
     return shopsPoints
 
-def printResults(shopsPoints):
-    for shopPoints in shopsPoints:
-        for name, points in shopPoints.items():
-            print(name, points)
+def printResults(shopsPointsDict):
+    sortedShops = sorted(shopsPointsDict, key=lambda k: k['points'], reverse=True) 
+    for rank, shop in enumerate(sortedShops):
+        print(shop['name'], shop['points'])
+        if rank > 1:
+            break;
 
 main()
 
