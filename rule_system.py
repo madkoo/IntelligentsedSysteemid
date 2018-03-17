@@ -1,6 +1,6 @@
 class Shop():
     
-    def __init__(self, shopName, productPrice, transportPrice, transportTime, parking, parkingCharge, serviceLanguage, wheelchairAccessibility, crowd):
+    def __init__(self, shopName, productPrice, transportPrice, transportTime, parking, parkingCharge, serviceLanguage, wheelchairAccessibility, shopType):
         self.name = shopName
         self.productPrice = productPrice
         self.transportPrice = transportPrice
@@ -9,11 +9,12 @@ class Shop():
         self.parkingCharge = parkingCharge
         self.serviceLanguage = serviceLanguage
         self.wheelchairAccessibility = wheelchairAccessibility
-        self.crowd = crowd
+        self.shopType = shopType
         
 class Inputs():
     
-    def __init__(self, maximumBudget, preferredTransport, expectedArrival, preferredSelectionSize, product, area, language, maximumPeople, handicaped, popularity):
+    def __init__(self, maximumBudget, preferredTransport, expectedArrival, preferredSelectionSize, 
+                 product, area, language, maximumPeople, handicapped, fearsCrowd):
         self.maximumBudget = maximumBudget
         self.preferredTransport = preferredTransport
         self.expectedArrival = expectedArrival
@@ -22,8 +23,8 @@ class Inputs():
         self.area = area
         self.language = language
         self.maximumPeople = maximumPeople
-        self.handicaped = handicaped
-        self.popularity = popularity
+        self.handicapped = handicapped
+        self.fearsCrowd = fearsCrowd
         
 class Outputs():
     
@@ -36,8 +37,12 @@ class Outputs():
         self.parkingCanPay = None
         self.language = None
         self.wheelchairOrPram = None
-        self.bestCrowd = None
-        self.bestSelectionSize = None
+        self.bestShopType = None
+    
+    # for testing
+    def getAllOutputs(self):
+        return [self.product, self.productBudget, self.transportBudget, self.bestTransportTime, 
+                self.parkingWish, self.parkingCanPay, self.language, self.wheelchairOrPram, self.bestShopType]
 
 def main():
     inputs = askQuestions()
@@ -52,7 +57,7 @@ def askQuestions():
     product = answer     
     answer = input("Kui suure summa oled valmis kulutada kaubale ja transpordile poodi?")
     maximumBudget = int(answer)
-    answer = input("Kui suur valik on poes sinu kaup, kas kauplus, supermarket, hypermarket?")
+    answer = input("Kui suurt kaubavalikut sa soovid (suur/keskmine/pole oluline?)")
     preferredSelectionSize = answer
     answer = input("Kui kiiresti soovid poodi jõuda, 5min, 30min, 1h, 2h?")
     expectedArrival = answer
@@ -65,32 +70,30 @@ def askQuestions():
     answer = input("Kas on oluline, et piirkond oleks turvaline? (jah/ei)")
     area = answer
     answer = input("Kas lähed ratastooli, vankri, mõlemaga või ilma?(vanker, ratastool, molemad, ei)")
-    handicaped = answer
-    answer = input("Kas eelistad, et poes oleks võimalikult vähe rahvast? jah/ei")
-    popularity = answer
-    inputs = Inputs(maximumBudget, preferredTransport, expectedArrival, preferredSelectionSize, product, area, language, maximumPeople, handicaped, popularity)
+    handicapped = answer
+    answer = input("Kas on oluline, et poes oleks võimalikult vähe rahvast? jah/ei")
+    fearsCrowd = answer
+    inputs = Inputs(maximumBudget, preferredTransport, expectedArrival, preferredSelectionSize, product, area, language, maximumPeople, handicapped, fearsCrowd)
     return inputs
 
 def rules(inputs):
     outputs = Outputs()
 
     #productBudget
-    if inputs.maximumBudget < 5:
-        outputs.productBudget = 5
-    
-    if (inputs.maximumBudget <=5 and inputs.maximumBudget >=40):
-        outputs.productBudget = 15
 
-    if (inputs.maximumBudget <=40 and inputs.maximumBudget >=60):
-        outputs.productBudget = 25
+    if inputs.maximumBudget <= 5:
+        outputs.productBudget = 5
+
+    if inputs.maximumBudget > 5:
+        outputs.productBudget = 100
     
     #transportBudget
 
-     if inputs.maximumBudget < 5:
+    if inputs.maximumBudget < 5:
         outputs.transportBudget = 0
+        
 
     #bestTransportTime 
-    # miks 2 tykki seda sektsiooni ?
     
     #parkingCanPay 
     if (inputs.preferredTransport == "auto"):
@@ -108,29 +111,30 @@ def rules(inputs):
 
     # (vanker, ratastool, molemad, ei)")
     #wheelchairOrPram
-    if(inputs.handicaped == "vanker" or inputs.handicaped == "ratastool" or inputs.handicaped == "molemad")
-        outputs.parkingwish = "yes"
-        outputs.wheelchairOrPram = inputs.handicaped
+    if inputs.handicapped == "vanker" or inputs.handicapped == "ratastool" or inputs.handicapped == "molemad":
+        outputs.parkingwish = True
+        outputs.wheelchairOrPram = True
+    else:
+        outputs.wheelchairOrPram = False
+        
 
-    #bestCrowd 
-    if(inputs.popularity == "yes" and  inputs.preferredSelectionSize="supermarket"  )
-        outputs.bestSelectionSize = "supermarket"
-    if(inputs.popularity == "yes" and  inputs.preferredSelectionSize="hypermarket"  )
-        outputs.bestSelectionSize = "hypermarket"
-    if(inputs.popularity == "no" and  inputs.preferredSelectionSize="kauplus"  )
-        outputs.bestSelectionSize = "kauplus"
-    
-    #bestSelectionSize 
-
-    #transport time
-    # miks 2 tykki seda sektsiooni ?
-
-    #transport price
+    #bestShopType
+    if inputs.fearsCrowd == "ei" and  inputs.preferredSelectionSize == "suur":
+        outputs.bestShopType = "hypermarket"
+    elif inputs.fearsCrowd == "ei" and  inputs.preferredSelectionSize == "keskmine":
+        outputs.bestShopType = "supermarket"
+    elif inputs.fearsCrowd == "ei" and  inputs.preferredSelectionSize == "pole oluline":
+        outputs.bestShopType = "kauplus"
+    elif inputs.fearsCrowd == "jah" and  inputs.preferredSelectionSize == "suur":
+        outputs.bestShopType = "supermarket"
+    elif inputs.fearsCrowd == "jah" and  inputs.preferredSelectionSize == "keskmine":
+        outputs.bestShopType = "kauplus"
+    elif inputs.fearsCrowd == "jah" and  inputs.preferredSelectionSize == "pole oluline":
+        outputs.bestShopType = "kauplus"
 
     #product
 
     outputs.product = inputs.product
-
 
     #maximum budget
 
@@ -154,10 +158,28 @@ def createShops():
 def getShopsPoints(outputs, shops):
     shopsPoints = []
     
+    # for testing
+    outs = outputs.getAllOutputs()
+    for output in outs:
+        print (output)
+        
     for shop in shops:
         shopPoints = 0
         if shop.productPrice[outputs.product] < outputs.productBudget:
             shopPoints += 10
+            print(shop.name, "good price")
+        if shop.parking and outputs.parkingWish:
+            shopPoints += 5
+            print(shop.name, "parking")
+        if not shop.parkingCharge and outputs.parkingWish and not outputs.parkingCanPay:
+            shopPoints += 5
+            print(shop.name, "free parking")
+        if shop.wheelchairAccessibility and outputs.wheelchairOrPram:
+            shopPoints += 5
+            print(shop.name, "wheelchair")
+        if shop.shopType == outputs.bestShopType:
+            shopPoints +=  5
+            print(shop.name, "best type")
         shopsPoints.append({shop.name: shopPoints})
     return shopsPoints
 
