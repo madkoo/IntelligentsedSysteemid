@@ -40,11 +40,6 @@ class Outputs():
         self.language = None
         self.wheelchairOrPram = None
         self.bestShopType = None
-    
-    # for testing
-    def getAllOutputs(self):
-        return [self.product, self.productBudget, self.transportBudget, self.bestTransport, self.bestTransportTime, 
-                self.parkingWish, self.parkingCanPay, self.language, self.wheelchairOrPram, self.bestShopType]
 
 # for testing
 def testInputs():
@@ -71,26 +66,38 @@ def main():
     printResults(shopsPoints)
 
 def askQuestions():
-    answer = input("Mida soovid osta, kas piim, leib, sai, viin?")
+    answer = None
+    while answer not in ["piim", "leib", "sai", "viin"]:
+        answer = input("Mida soovid osta, kas piim, leib, sai, viin?")
     product = answer     
-    answer = input("Kui suure summa oled valmis kulutada kaubale ja transpordile poodi?")
+    while not answer.isdigit():
+        answer = input("Kui suure summa oled valmis kulutada kaubale ja transpordile poodi?")
     maximumBudget = int(answer)
-    answer = input("Kui suurt kaubavalikut sa soovid (suur/keskmine/pole oluline?)")
+    while answer not in ["suur", "keskmine", "pole oluline"]:
+        answer = input("Kui suurt kaubavalikut sa soovid (suur/keskmine/pole oluline?)")
     preferredSelectionSize = answer
-    answer = input("Kui kiiresti soovid poodi jõuda, 5min, 30min, 1h, 2h?")
+    while answer not in ["5min", "30min", "1h", "2h"]:
+        answer = input("Kui kiiresti soovid poodi jõuda, 5min, 30min, 1h, 2h?")
     expectedArrival = answer
-    answer = input("Millist transporti soovid kasutada kaubale järgi minemiseks, kas jalgsimatk, yhistransport, eratransport voi auto?")
+    while answer not in ["jalgsimatk", "yhistransport", "eratransport", "auto"]:
+        answer = input("Millist transporti soovid kasutada kaubale järgi minemiseks, kas jalgsimatk, yhistransport, eratransport voi auto?")
     preferredTransport = answer
-    answer = input("Kui palju inimesi poodi tootele järgi läheb?")
+    while not answer.isdigit():
+        answer = input("Kui palju inimesi poodi tootele järgi läheb?")
     numberOfPeople = int(answer)
-    answer = input("Mis keelt sa räägid? (inglise, vene, eesti, prantsuse, itaalia, hispaania)")
+    while answer not in ["inglise", "vene", "eesti", "prantsuse", "itaalia", "hispaania"]:
+        answer = input("Mis keelt sa räägid? (inglise, vene, eesti, prantsuse, itaalia, hispaania)")
     language = answer
-    answer = input("Kas on oluline, et piirkond oleks turvaline? (jah/ei)")
+    while answer not in ["jah", "ei"]:
+        answer = input("Kas on oluline, et piirkond oleks turvaline? (jah/ei)")
     area = answer
-    answer = input("Kas lähed ratastooli, vankri, mõlemaga või ilma?(vanker, ratastool, molemad, ei)")
+    while answer not in ["ratastool", "vanker", "molemad", "ei"]:
+        answer = input("Kas lähed ratastooli, vankri, mõlemaga või ilma?(vanker, ratastool, molemad, ei)")
     handicapped = answer
-    answer = input("Kas on oluline, et poes oleks võimalikult vähe rahvast? jah/ei")
+    while answer not in ["jah", "ei"]:
+        answer = input("Kas on oluline, et poes oleks võimalikult vähe rahvast? jah/ei")
     fearsCrowd = answer
+    
     inputs = Inputs(maximumBudget, preferredTransport, expectedArrival, preferredSelectionSize, 
                     product, area, language, numberOfPeople, handicapped, fearsCrowd)
     return inputs
@@ -260,12 +267,6 @@ def createShops():
 
 def getShopsPoints(outputs, shops):
     shopsPoints = []
-    
-    # for testing
-#    outs = outputs.getAllOutputs()
-#    for output in outs:
-#        print (output)
-        
     for shop in shops:
         shopPoints = 0
         if shop.productPrice[outputs.product] < outputs.productBudget:
@@ -278,6 +279,8 @@ def getShopsPoints(outputs, shops):
             shopPoints += 5
         if not shop.parkingCharge and outputs.parkingWish and not outputs.parkingCanPay:
             shopPoints += 5
+        if outputs.language in shop.serviceLanguage:
+            shopPoints += 5
         if shop.wheelchairAccessibility and outputs.wheelchairOrPram:
             shopPoints += 5
         if shop.shopType == outputs.bestShopType:
@@ -288,7 +291,7 @@ def getShopsPoints(outputs, shops):
 def printResults(shopsPointsDict):
     sortedShops = sorted(shopsPointsDict, key=lambda k: k['points'], reverse=True) 
     for rank, shop in enumerate(sortedShops):
-        print(shop['name'], shop['points'])
+        print(shop['name'] + ":", shop['points'], "punkti")
         if rank > 1:
             break;
 
