@@ -1,7 +1,7 @@
 class Shop():
     
     def __init__(self, shopName, productPrice, transportPrice, transportTime, parking, 
-                 parkingCharge, serviceLanguage, wheelchairAccessibility, shopType):
+                 parkingCharge, serviceLanguage, wheelchairAccessibility, shopType,area):
         self.name = shopName
         self.productPrice = productPrice
         self.transportPrice = transportPrice
@@ -11,6 +11,7 @@ class Shop():
         self.serviceLanguage = serviceLanguage
         self.wheelchairAccessibility = wheelchairAccessibility
         self.shopType = shopType
+        self.area = area
         
 class Inputs():
     
@@ -40,6 +41,7 @@ class Outputs():
         self.language = None
         self.wheelchairOrPram = None
         self.bestShopType = None
+        self.bestArea = None
 
 # for testing
 def testInputs():
@@ -149,6 +151,18 @@ def rules(inputs):
     #enda auto
     elif inputs.preferredTransport == "auto" and inputs.numberOfPeople <= 5:
         outputs.bestTransport = "auto"
+        
+    elif (inputs.preferredTransport == "auto" and inputs.maximumBudget >= 50 
+        and inputs.numberOfPeople <= 4 and inputs.handicapped == "ei"):
+        outputs.bestTransport = "auto"
+        
+    elif (inputs.preferredTransport == "auto" and inputs.maximumBudget >= 30 
+        and inputs.numberOfPeople <= 4 and inputs.handicapped == "jah"):
+        outputs.bestTransport = "auto"
+        
+    elif (inputs.preferredTransport == "auto" and inputs.maximumBudget >= 20 
+        and inputs.numberOfPeople <= 2 and inputs.handicapped == "ei"):
+        outputs.bestTransport = "auto"
              
     elif (inputs.preferredTransport == "auto" and inputs.numberOfPeople > 5 and inputs.maximumBudget >= 50 
         and inputs.numberOfPeople <= 4 and inputs.handicapped == "ei"):
@@ -214,7 +228,23 @@ def rules(inputs):
     else:
         outputs.wheelchairOrPram = False
         
-
+    #area
+    if(inputs.area == "jah" and inputs.fearsCrowd == "ei" and inputs.preferredSelectionSize == "keskmine"):
+        outputs.bestArea = "rahulik"
+    elif(inputs.area == "jah" and inputs.fearsCrowd == "jah" and inputs.preferredSelectionSize == "pole oluline"):
+        outputs.bestArea = "keskmine"
+    elif(inputs.area == "jah" and inputs.fearsCrowd == "ei" and inputs.preferredSelectionSize == "keskmine"):
+        outputs.bestArea = "keskmine"
+    elif(inputs.area == "jah" and inputs.fearsCrowd == "ei" and inputs.preferredSelectionSize == "suur"):
+        outputs.bestArea = "rahvarohke"
+    elif(inputs.area == "ei" and inputs.fearsCrowd == "ei" and inputs.preferredSelectionSize == "pole oluline"):
+        outputs.bestArea = "rahvarohke"
+    elif(inputs.area == "ei" and inputs.fearsCrowd == "jah" and inputs.preferredSelectionSize == "pole oluline"):
+        outputs.bestArea = "rahulik"
+    else: 
+        outputs.bestArea = "keskmine"
+        
+        
     #bestShopType
     if inputs.fearsCrowd == "ei" and  inputs.preferredSelectionSize == "suur":
         outputs.bestShopType = "hypermarket"
@@ -234,35 +264,41 @@ def rules(inputs):
     outputs.product = inputs.product
 
 
+    
+    
     return outputs
     
 def createShops():
     rimi = Shop("Rimi", {'piim': 10, 'leib': 7, 'sai': 5, 'viin': 10},
                 {'jalgsimatk': 0, 'yhistransport': 10, 'eratransport': 50, 'auto': 0}, 
                 {'jalgsimatk': 30, 'yhistransport': 10, 'eratransport': 8, 'auto': 5}, 
-                True, True, ["eesti", "vene"], False, "hypermarket")
+                True, True, ["eesti", "vene"], False, "hypermarket","rahvarohke")
     felixiKaubad = Shop("Felixi kaubad", {'piim': 3, 'leib': 5, 'sai': 6, 'viin': 30}, 
                 {'jalgsimatk': 0, 'yhistransport': 5, 'eratransport': 20, 'auto': 0}, 
                 {'jalgsimatk': 10, 'yhistransport': 5, 'eratransport': 4, 'auto': 2}, 
-                False, False, ["eesti"], True, "kauplus")
+                False, False, ["eesti"], True, "kauplus","rahulik")
     selver = Shop("Selver", {'piim': 6, 'leib': 4, 'sai': 7, 'viin': 15}, 
                 {'jalgsimatk': 0, 'yhistransport': 15, 'eratransport': 60, 'auto': 0}, 
                 {'jalgsimatk': 40, 'yhistransport': 15, 'eratransport': 10, 'auto': 7}, 
-                False, False, ["eesti, hispaania , vene, prantsuse, itaalia"], True, "supermarket")
+                False, False, ["eesti, hispaania , vene, prantsuse, itaalia"], True, "supermarket","rahvarohke")
     prisma = Shop("Prisma", {'piim': 2, 'leib': 6, 'sai': 8, 'viin': 17}, 
                 {'jalgsimatk': 0, 'yhistransport': 10, 'eratransport': 60, 'auto': 0}, 
                 {'jalgsimatk': 20, 'yhistransport': 8, 'eratransport': 6, 'auto': 4}, 
-                False, False, ["eesti, inglise, vene, hispaania"], True, "supermarket")
+                False, False, ["eesti, inglise, vene, hispaania"], True, "supermarket","rahvarohke")
     kaubakeskus = Shop("Kaubakeskus", {'piim': 12, 'leib': 3, 'sai': 4, 'viin': 8}, 
                 {'jalgsimatk': 0, 'yhistransport': 15, 'eratransport': 80, 'auto': 0}, 
                 {'jalgsimatk': 100, 'yhistransport': 30, 'eratransport': 20, 'auto': 10}, 
-                False, False, ["eesti"], True, "kauplus")
+                False, False, ["eesti"], True, "kauplus","keskmine")
     ica = Shop("Ica", {'piim': 9, 'leib': 9, 'sai': 4, 'viin': 25}, 
                {'jalgsimatk': 0, 'yhistransport': 8, 'eratransport': 50, 'auto': 0}, 
                {'jalgsimatk': 60, 'yhistransport': 20, 'eratransport': 15, 'auto': 8}, 
-               True, True, ["eesti", "vene, inglise, prantsuse"], False, "hypermarket")
+               True, True, ["eesti", "vene, inglise, prantsuse"], False, "hypermarket","keskmine")
+    grossiToidukaubad = Shop("Ica", {'piim': 5, 'leib': 4, 'sai': 2, 'viin': 7}, 
+               {'jalgsimatk': 2, 'yhistransport': 15, 'eratransport': 45, 'auto': 3}, 
+               {'jalgsimatk': 20, 'yhistransport': 15, 'eratransport': 12, 'auto': 6}, 
+               False, True, ["eesti", "vene"], True, "kauplus","rahulik")
     
-    shops = [rimi, felixiKaubad, selver, prisma, kaubakeskus, ica]
+    shops = [rimi, felixiKaubad, selver, prisma, kaubakeskus, ica, grossiToidukaubad]
     return shops
 
 def getShopsPoints(outputs, shops):
@@ -285,6 +321,12 @@ def getShopsPoints(outputs, shops):
             shopPoints += 5
         if shop.shopType == outputs.bestShopType:
             shopPoints +=  5
+        if shop.area == "rahulik":
+            shopPoints +=  5
+        if shop.area == "rahvarohke":
+            shopPoints +=  1
+        if shop.area == "keskmine":
+            shopPoints +=  3
         shopsPoints.append({"name":shop.name, "points": shopPoints})
     return shopsPoints
 
