@@ -43,7 +43,6 @@ class Outputs():
         self.bestShopType = None
         self.bestArea = None
 
-# for testing
 def testInputs():
     maximumBudget = 30
     preferredTransport = "yhistransport"
@@ -189,12 +188,14 @@ def rules(inputs):
     elif outputs.bestTransport == "auto" and inputs.maximumBudget > 10:
         outputs.transportBudget = 5
     elif outputs.bestTransport == "yhistransport":
-        if inputs.numberOfPeople == 1 and inputs.maximumBudget > 10:
+        if inputs.numberOfPeople == 1 and inputs.maximumBudget >= 10:
             outputs.transportBudget = 5
         elif inputs.numberOfPeople > 3 and inputs.maximumBudget > 25:
             outputs.transportBudget = 20
         elif inputs.maximumBudget > 15:
             outputs.transportBudget = 10
+        else:
+            outputs.transportBudget = 0
     elif outputs.bestTransport == "eratransport":
         outputs.transportBudget = 50
     else:
@@ -300,7 +301,7 @@ def createShops():
                {'jalgsimatk': 0, 'yhistransport': 8, 'eratransport': 50, 'auto': 0}, 
                {'jalgsimatk': 60, 'yhistransport': 20, 'eratransport': 15, 'auto': 8}, 
                True, True, ["eesti", "vene, inglise, prantsuse"], False, "hypermarket","keskmine")
-    grossiToidukaubad = Shop("Ica", {'piim': 5, 'leib': 4, 'sai': 2, 'viin': 7}, 
+    grossiToidukaubad = Shop("Grossi Toidukaubad", {'piim': 5, 'leib': 4, 'sai': 2, 'viin': 7}, 
                {'jalgsimatk': 2, 'yhistransport': 15, 'eratransport': 45, 'auto': 3}, 
                {'jalgsimatk': 20, 'yhistransport': 15, 'eratransport': 12, 'auto': 6}, 
                False, True, ["eesti", "vene"], True, "kauplus","rahulik")
