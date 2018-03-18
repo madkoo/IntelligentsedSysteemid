@@ -1,7 +1,7 @@
 class Shop():
     
     def __init__(self, shopName, productPrice, transportPrice, transportTime, parking, 
-                 parkingCharge, serviceLanguage, wheelchairAccessibility, shopType,area):
+                 parkingCharge, serviceLanguage, wheelchairAccessibility, shopType, area):
         self.name = shopName
         self.productPrice = productPrice
         self.transportPrice = transportPrice
@@ -16,13 +16,13 @@ class Shop():
 class Inputs():
     
     def __init__(self, maximumBudget, preferredTransport, expectedArrival, preferredSelectionSize, 
-                 product, area, language, numberOfPeople, handicapped, fearsCrowd):
+                 product, safetyImportant, language, numberOfPeople, handicapped, fearsCrowd):
         self.maximumBudget = maximumBudget
         self.preferredTransport = preferredTransport
         self.expectedArrival = expectedArrival
         self.preferredSelectionSize = preferredSelectionSize
         self.product = product
-        self.area = area
+        self.safetyImportant = safetyImportant
         self.language = language
         self.numberOfPeople = numberOfPeople
         self.handicapped = handicapped
@@ -50,14 +50,14 @@ def testInputs():
     expectedArrival = "30min"
     preferredSelectionSize = "suur"
     product = "piim"
-    area = "jah"
+    safetyImportant = "jah"
     language = "inglise"
     numberOfPeople = 2
     handicapped = "vanker"
     fearsCrowd = "jah"
     
     inputs = Inputs(maximumBudget, preferredTransport, expectedArrival, preferredSelectionSize, 
-                    product, area, language, numberOfPeople, handicapped, fearsCrowd)
+                    product, safetyImportant, language, numberOfPeople, handicapped, fearsCrowd)
     return inputs
 
 def main():
@@ -68,40 +68,49 @@ def main():
     printResults(shopsPoints)
 
 def askQuestions():
-    answer = None
+    answer = ""
     while answer not in ["piim", "leib", "sai", "viin"]:
         answer = input("Mida soovid osta, kas piim, leib, sai, viin?")
-    product = answer     
+    product = answer
+    answer = ""
     while not answer.isdigit():
         answer = input("Kui suure summa oled valmis kulutada kaubale ja transpordile poodi?")
     maximumBudget = int(answer)
+    answer = ""
     while answer not in ["suur", "keskmine", "pole oluline"]:
         answer = input("Kui suurt kaubavalikut sa soovid (suur/keskmine/pole oluline?)")
     preferredSelectionSize = answer
+    answer = ""
     while answer not in ["5min", "30min", "1h", "2h"]:
         answer = input("Kui kiiresti soovid poodi jõuda, 5min, 30min, 1h, 2h?")
     expectedArrival = answer
+    answer = ""
     while answer not in ["jalgsimatk", "yhistransport", "eratransport", "auto"]:
         answer = input("Millist transporti soovid kasutada kaubale järgi minemiseks, kas jalgsimatk, yhistransport, eratransport voi auto?")
     preferredTransport = answer
+    answer = ""
     while not answer.isdigit():
         answer = input("Kui palju inimesi poodi tootele järgi läheb?")
     numberOfPeople = int(answer)
+    answer = ""
     while answer not in ["inglise", "vene", "eesti", "prantsuse", "itaalia", "hispaania"]:
         answer = input("Mis keelt sa räägid? (inglise, vene, eesti, prantsuse, itaalia, hispaania)")
     language = answer
+    answer = ""
     while answer not in ["jah", "ei"]:
         answer = input("Kas on oluline, et piirkond oleks turvaline? (jah/ei)")
-    area = answer
+    safetyImportant = answer
+    answer = ""
     while answer not in ["ratastool", "vanker", "molemad", "ei"]:
         answer = input("Kas lähed ratastooli, vankri, mõlemaga või ilma?(vanker, ratastool, molemad, ei)")
     handicapped = answer
+    answer = ""
     while answer not in ["jah", "ei"]:
         answer = input("Kas on oluline, et poes oleks võimalikult vähe rahvast? jah/ei")
     fearsCrowd = answer
     
     inputs = Inputs(maximumBudget, preferredTransport, expectedArrival, preferredSelectionSize, 
-                    product, area, language, numberOfPeople, handicapped, fearsCrowd)
+                    product, safetyImportant, language, numberOfPeople, handicapped, fearsCrowd)
     return inputs
 
 def rules(inputs):
@@ -229,18 +238,16 @@ def rules(inputs):
         outputs.wheelchairOrPram = False
         
     #area
-    if(inputs.area == "jah" and inputs.fearsCrowd == "ei" and inputs.preferredSelectionSize == "keskmine"):
-        outputs.bestArea = "rahulik"
-    elif(inputs.area == "jah" and inputs.fearsCrowd == "jah" and inputs.preferredSelectionSize == "pole oluline"):
-        outputs.bestArea = "keskmine"
-    elif(inputs.area == "jah" and inputs.fearsCrowd == "ei" and inputs.preferredSelectionSize == "keskmine"):
-        outputs.bestArea = "keskmine"
-    elif(inputs.area == "jah" and inputs.fearsCrowd == "ei" and inputs.preferredSelectionSize == "suur"):
+    if(inputs.safetyImportant == "jah" and inputs.fearsCrowd == "ei"):
         outputs.bestArea = "rahvarohke"
-    elif(inputs.area == "ei" and inputs.fearsCrowd == "ei" and inputs.preferredSelectionSize == "pole oluline"):
-        outputs.bestArea = "rahvarohke"
-    elif(inputs.area == "ei" and inputs.fearsCrowd == "jah" and inputs.preferredSelectionSize == "pole oluline"):
+    elif(inputs.safetyImportant == "jah" and inputs.fearsCrowd == "jah"):
+        outputs.bestArea = "keskmine"
+    elif(inputs.safetyImportant == "ei" and inputs.fearsCrowd == "jah"):
         outputs.bestArea = "rahulik"
+    elif(inputs.safetyImportant == "ei" and inputs.fearsCrowd == "ei" and inputs.preferredSelectionSize == "pole oluline"):
+        outputs.bestArea = "rahulik"
+    elif(inputs.safetyImportant == "ei" and inputs.fearsCrowd == "ei" and inputs.preferredSelectionSize == "suur"):
+        outputs.bestArea = "rahvarohke"
     else: 
         outputs.bestArea = "keskmine"
         
@@ -321,12 +328,8 @@ def getShopsPoints(outputs, shops):
             shopPoints += 5
         if shop.shopType == outputs.bestShopType:
             shopPoints +=  5
-        if shop.area == "rahulik":
+        if shop.area == outputs.bestArea:
             shopPoints +=  5
-        if shop.area == "rahvarohke":
-            shopPoints +=  1
-        if shop.area == "keskmine":
-            shopPoints +=  3
         shopsPoints.append({"name":shop.name, "points": shopPoints})
     return shopsPoints
 
